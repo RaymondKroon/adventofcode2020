@@ -37,4 +37,16 @@ func main() {
             }
         }
     }
+
+
+
+    for iIdx, i := range input {
+        for jIdx, j := range input[iIdx+1:] {
+            for _, k := range input[iIdx + jIdx + 1:] {
+                if i+j+k == 2020 {
+                    println(i * j * k)
+                }
+            }
+        }
+    }
 }
