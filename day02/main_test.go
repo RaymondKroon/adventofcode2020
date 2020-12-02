@@ -8,15 +8,13 @@ import (
 func Benchmark(b *testing.B) {
 	benchmarks := []struct {
 		name string
-		fn   func([]int) int
-	}{
-		{name: "part1", fn: part1},
-		{name: "part2", fn: part2},
-		{name: "part2sorted", fn: part2sorted},
+		fn   func([]PasswordLine) int
+	}{{name: "part1", fn: Part1CountCorrectPasswords},
+		{name: "part2", fn: Part2CountCorrectPasswords},
 	}
 
-	stringInput, _ := adventofcode2020.ReadInput("../input/day01.txt")
-	input, _ := adventofcode2020.Atoi(stringInput)
+	stringInput, _ := adventofcode2020.ReadInput("../input/day02.txt")
+	input, _ := ParseInput(stringInput)
 
 	for _, bm := range benchmarks {
 		b.Run(bm.name, func(b *testing.B) {
