@@ -20,6 +20,7 @@ func Benchmark(b *testing.B) {
 
 		b.Run(bm.name, func(b *testing.B) {
 			for i := 0; i < b.N; i++ {
+				m.Reset()
 				bm.fn(m)
 			}
 		})
