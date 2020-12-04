@@ -5,33 +5,27 @@ import (
 	"fmt"
 	"regexp"
 	"strconv"
-	"strings"
 )
 
-func ParsePassports(input []string) *[]map[string]string {
-	var passports []map[string]string
-	p := make(map[string]string)
+type Passport = map[string]string
 
-	for _, l := range input {
-		if l == "" {
-			passports = append(passports, p)
-			p = make(map[string]string)
-		} else {
-			pairs := strings.Split(l, " ")
-			for _, pair := range pairs {
-				kv := strings.Split(pair, ":")
-				p[string(kv[0])] = string(kv[1])
-			}
+func ParsePassports(chunks []string) *[]Passport {
+	var passports []Passport
+	passportRegex := regexp.MustCompile(`(\w{3}):(.+?)(\s|$)`)
+	for _, c := range chunks {
+		matches := passportRegex.FindAllStringSubmatch(c, -1)
+		p := make(Passport)
+		for _, kv := range matches {
+			p[kv[1]] = kv[2]
 		}
-	}
-	if len(p) > 0 {
+
 		passports = append(passports, p)
 	}
 
 	return &passports
 }
 
-func PassportFieldsPresent(p map[string]string) bool {
+func PassportFieldsPresent(p Passport) bool {
 	ok := true
 	for _, k := range []string{"byr", "iyr", "eyr", "hgt", "hcl", "ecl", "pid"} {
 		_, exists := p[k]
@@ -41,7 +35,7 @@ func PassportFieldsPresent(p map[string]string) bool {
 	return ok
 }
 
-func fieldBetweenIntValues(p map[string]string, field string, least int, most int) bool {
+func fieldBetweenIntValues(p Passport, field string, least int, most int) bool {
 	fieldS := p[field]
 	fieldI, err := strconv.Atoi(fieldS)
 	if err != nil || fieldI < least || fieldI > most {
@@ -51,7 +45,7 @@ func fieldBetweenIntValues(p map[string]string, field string, least int, most in
 	return true
 }
 
-func PassportFieldsPresentAndCorrect(p map[string]string) bool {
+func PassportFieldsPresentAndCorrect(p Passport) bool {
 	if !PassportFieldsPresent(p) {
 		return false
 	}
@@ -68,34 +62,34 @@ func PassportFieldsPresentAndCorrect(p map[string]string) bool {
 		return false
 	}
 
-	hgt := p["hgt"]
-	if strings.HasSuffix(hgt, "cm") {
-		hgtI, err := strconv.Atoi(hgt[:len(hgt)-2])
-		if err != nil || hgtI < 150 || hgtI > 193 {
+	hgtRegex := regexp.MustCompile(`^(\d+)(cm|in)$`)
+	match := hgtRegex.FindStringSubmatch(p["hgt"])
+	if len(match) == 0 {
+		return false
+	}
+	switch match[2] {
+	case "cm":
+		if i, _ := strconv.Atoi(match[1]); i < 150 || i > 193 {
 			return false
 		}
-	} else if strings.HasSuffix(hgt, "in") {
-		hgtI, err := strconv.Atoi(hgt[:len(hgt)-2])
-		if err != nil || hgtI < 59 || hgtI > 76 {
+	case "in":
+		if i, _ := strconv.Atoi(match[1]); i < 59 || i > 76 {
 			return false
 		}
-	} else {
+	default:
 		return false
 	}
 
-	hcl := p["hcl"]
-	matched, _ := regexp.MatchString("^#([a-fA-F0-9]{6})$", hcl)
+	matched, _ := regexp.MatchString("^#([a-fA-F0-9]{6})$", p["hcl"])
 	if !matched {
 		return false
 	}
 
-	ecl := p["ecl"]
-	if !adventofcode2020.StringInSlice(ecl, []string{"amb", "blu", "brn", "gry", "grn", "hzl", "oth"}) {
+	if !adventofcode2020.StringInSlice(p["ecl"], []string{"amb", "blu", "brn", "gry", "grn", "hzl", "oth"}) {
 		return false
 	}
 
-	pid := p["pid"]
-	matched, _ = regexp.MatchString("^[0-9]{9}$", pid)
+	matched, _ = regexp.MatchString("^[0-9]{9}$", p["pid"])
 	if !matched {
 		return false
 	}
@@ -104,8 +98,8 @@ func PassportFieldsPresentAndCorrect(p map[string]string) bool {
 }
 
 func main() {
-	stringInput, _ := adventofcode2020.ReadInput("./input/day04.txt")
-	passports := ParsePassports(stringInput)
+	passwordChunks, _ := adventofcode2020.ReadSplittedInput("./input/day04.txt", "\n\n")
+	passports := ParsePassports(passwordChunks)
 	validPasswords := 0
 	for _, p := range *passports {
 		if PassportFieldsPresent(p) {
@@ -113,7 +107,7 @@ func main() {
 		}
 	}
 
-	fmt.Printf("(part1) Valid passwords: %d", validPasswords)
+	fmt.Printf("(part1) Valid passwords: %d\n", validPasswords)
 
 	validAndCorrectPasswords := 0
 	for _, p := range *passports {
@@ -122,5 +116,5 @@ func main() {
 		}
 	}
 
-	fmt.Printf("(part2) Valid passwords: %d", validAndCorrectPasswords)
+	fmt.Printf("(part2) Valid passwords: %d\n", validAndCorrectPasswords)
 }

@@ -15,7 +15,7 @@ func Benchmark(b *testing.B) {
 	}
 
 	for _, bm := range benchmarks {
-		stringInput, _ := adventofcode2020.ReadInput("../input/day03.txt")
+		stringInput, _ := adventofcode2020.ReadInputLines("../input/day03.txt")
 		m := CreateMap(stringInput)
 
 		b.Run(bm.name, func(b *testing.B) {

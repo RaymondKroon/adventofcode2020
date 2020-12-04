@@ -7,7 +7,7 @@ import (
 
 func main() {
 
-	stringInput, _ := adventofcode2020.ReadInput("./input/day01.txt")
+	stringInput, _ := adventofcode2020.ReadInputLines("./input/day01.txt")
 	input, _ := adventofcode2020.Atoi(stringInput)
 
 	println(part1(input))

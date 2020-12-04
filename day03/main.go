@@ -93,7 +93,7 @@ func Part2(m Map) int {
 }
 
 func main() {
-	stringInput, _ := adventofcode2020.ReadInput("./input/day03.txt")
+	stringInput, _ := adventofcode2020.ReadInputLines("./input/day03.txt")
 	m := CreateMap(stringInput)
 
 	fmt.Printf("(part1) nTrees: %d\n", Part1(m))

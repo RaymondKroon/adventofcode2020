@@ -15,7 +15,7 @@ func Benchmark(b *testing.B) {
 		{name: "part2sorted", fn: part2sorted},
 	}
 
-	stringInput, _ := adventofcode2020.ReadInput("../input/day01.txt")
+	stringInput, _ := adventofcode2020.ReadInputLines("../input/day01.txt")
 	input, _ := adventofcode2020.Atoi(stringInput)
 
 	for _, bm := range benchmarks {

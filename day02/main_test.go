@@ -13,7 +13,7 @@ func Benchmark(b *testing.B) {
 		{name: "part2", fn: Part2CountCorrectPasswords},
 	}
 
-	stringInput, _ := adventofcode2020.ReadInput("../input/day02.txt")
+	stringInput, _ := adventofcode2020.ReadInputLines("../input/day02.txt")
 	input, _ := ParseInput(stringInput)
 
 	for _, bm := range benchmarks {
