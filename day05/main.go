@@ -12,29 +12,27 @@ type BoardingPass struct {
 	ID   int
 }
 
-func FindElement(input string, upperBound int, lowCase string) int {
-	low := 0
-	high := upperBound - 1
-	stepsize := upperBound
-
-	for _, a := range input {
-		stepsize = stepsize / 2
-		if string(a) == lowCase {
-			high = high - stepsize
+func ParseBinaryCode(code string, down string, up string) int {
+	result := 0
+	for _, c := range code {
+		var d int
+		if string(c) == down {
+			d = 0
 		} else {
-			low = low + stepsize
+			d = 1
 		}
+		result = (result << 1) | d
 	}
 
-	return low
+	return result
 }
 
 func ParseBoardingPass(input string) BoardingPass {
 	r := input[0:7]
 	s := input[7:]
 
-	row := FindElement(r, 128, "F")
-	seat := FindElement(s, 8, "L")
+	row := ParseBinaryCode(r, "F", "B")
+	seat := ParseBinaryCode(s, "L", "R")
 	return BoardingPass{
 		Row:  row,
 		Seat: seat,
