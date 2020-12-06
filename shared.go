@@ -36,10 +36,8 @@ func CreateSubstringSplitter(substr string) bufio.SplitFunc {
 			return 0, nil, nil
 		}
 
-		// Find the index of the input of a newline followed by a
-		// pound sign.
 		if i := strings.Index(string(data), substr); i >= 0 {
-			return i + 1, data[0:i], nil
+			return i + len(substr), data[0:i], nil
 		}
 
 		// If at end of file with data return the data
