@@ -2,6 +2,7 @@ package main
 
 import (
 	"adventofcode2020"
+	"container/list"
 	"fmt"
 	"regexp"
 	"strconv"
@@ -66,17 +67,6 @@ func findBagsWichContains(rules []BagRule, color string) []BagRule {
 	return result
 }
 
-func searchUp(rules []BagRule, color string, selected *[]string) {
-	new := findBagsWichContains(rules, color)
-	for _, br := range new {
-		if !adventofcode2020.StringInSlice(br.Color, *selected) {
-			*selected = append(*selected, br.Color)
-			searchUp(rules, br.Color, selected)
-		}
-	}
-	return
-}
-
 func selectBagWithColor(rules []BagRule, color string) BagRule {
 	for _, br := range rules {
 		if br.Color == color {
@@ -98,10 +88,25 @@ func searchDown(rules []BagRule, color string) int {
 }
 
 func Part1CountShinyGoldParents(rules []BagRule) int {
-	total := make([]string, 0)
-	searchUp(rules, "shiny gold", &total)
+	queue := list.New()
+	queue.PushBack("shiny gold")
+	selected := make([]string, 0)
 
-	return len(total)
+	for queue.Len() > 0 {
+		e := queue.Front()
+		queue.Remove(e)
+
+		new := findBagsWichContains(rules, e.Value.(string))
+		for _, n := range new {
+			if !adventofcode2020.StringInSlice(n.Color, selected) {
+				selected = append(selected, n.Color)
+				queue.PushBack(n.Color)
+			}
+
+		}
+	}
+
+	return len(selected)
 }
 
 func Part2CountShinyGoldChildren(rules []BagRule) int {
@@ -111,9 +116,9 @@ func Part2CountShinyGoldChildren(rules []BagRule) int {
 func main() {
 	inputLines, _ := adventofcode2020.ReadInputLines("./input/day07.txt")
 	rules := ParseBagRules(inputLines)
-	answer1 := Part1CountShinyGoldParents(rules)
+	answer1 := Part1CountShinyGoldParents(rules) //172
 	fmt.Printf("(part1) bags %d\n", answer1)
 
-	answer2 := Part2CountShinyGoldChildren(rules)
+	answer2 := Part2CountShinyGoldChildren(rules) //39645
 	fmt.Printf("(part2) bags %d\n", answer2)
 }
