@@ -76,17 +76,6 @@ func selectBagWithColor(rules []BagRule, color string) BagRule {
 	return BagRule{}
 }
 
-func searchDown(rules []BagRule, color string) int {
-	br := selectBagWithColor(rules, color)
-	result := 0
-	if len(br.Bags) > 0 {
-		for _, b := range br.Bags {
-			result += b.N * (1 + searchDown(rules, b.Color))
-		}
-	}
-	return result
-}
-
 func Part1CountShinyGoldParents(rules []BagRule) int {
 	queue := list.New()
 	queue.PushBack("shiny gold")
@@ -109,8 +98,35 @@ func Part1CountShinyGoldParents(rules []BagRule) int {
 	return len(selected)
 }
 
+type q2 struct {
+	color      string
+	multiplier int
+}
+
 func Part2CountShinyGoldChildren(rules []BagRule) int {
-	return searchDown(rules, "shiny gold")
+	queue := list.New()
+	queue.PushBack(q2{
+		color:      "shiny gold",
+		multiplier: 1,
+	})
+
+	total := 0
+
+	for queue.Len() > 0 {
+		e := queue.Front()
+		queue.Remove(e)
+		val := e.Value.(q2)
+		br := selectBagWithColor(rules, val.color)
+		for _, b := range br.Bags {
+			total += val.multiplier * b.N
+			queue.PushBack(q2{
+				color:      b.Color,
+				multiplier: val.multiplier * b.N,
+			})
+		}
+	}
+
+	return total
 }
 
 func main() {
