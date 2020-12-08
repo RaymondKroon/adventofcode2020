@@ -18,6 +18,11 @@ func Atoi(s []string) ([]int, error) {
 	return input, nil
 }
 
+func MustAtoi(s string) int {
+	i, _ := strconv.Atoi(s)
+	return i
+}
+
 func ReadInput(filePath string) (string, error) {
 	content, err := ioutil.ReadFile(filePath)
 
