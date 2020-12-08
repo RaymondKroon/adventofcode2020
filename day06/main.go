@@ -34,6 +34,7 @@ func CountAnswers(input string) Counters {
 }
 
 func main() {
+	defer adventofcode2020.Stopwatch("Run")()
 	groupChunks, _ := adventofcode2020.ReadSplittedInput("./input/day06.txt", "\n\n")
 	any := 0
 	all := 0

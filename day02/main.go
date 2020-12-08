@@ -81,6 +81,7 @@ func Part2CountCorrectPasswords(input []PasswordLine) int {
 }
 
 func main() {
+	defer adventofcode2020.Stopwatch("Run")()
 	stringInput, _ := adventofcode2020.ReadInputLines("./input/day02.txt")
 	input, _ := ParseInput(stringInput)
 	fmt.Printf("(part1) Correct password: %d\n", Part1CountCorrectPasswords(input))

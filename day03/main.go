@@ -93,6 +93,7 @@ func Part2(m Map) int {
 }
 
 func main() {
+	defer adventofcode2020.Stopwatch("Run")()
 	stringInput, _ := adventofcode2020.ReadInputLines("./input/day03.txt")
 	m := CreateMap(stringInput)
 

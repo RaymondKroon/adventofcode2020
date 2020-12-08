@@ -69,6 +69,7 @@ func ParseBoardingPass(input string) BoardingPass {
 }
 
 func main() {
+	defer adventofcode2020.Stopwatch("Run")()
 	stringInput, _ := adventofcode2020.ReadInputLines("./input/day05.txt")
 	var bps []BoardingPass
 	for _, input := range stringInput {

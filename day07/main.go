@@ -130,6 +130,7 @@ func Part2CountShinyGoldChildren(rules []BagRule) int {
 }
 
 func main() {
+	defer adventofcode2020.Stopwatch("Run")()
 	inputLines, _ := adventofcode2020.ReadInputLines("./input/day07.txt")
 	rules := ParseBagRules(inputLines)
 	answer1 := Part1CountShinyGoldParents(rules) //172

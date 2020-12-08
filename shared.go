@@ -2,12 +2,21 @@ package adventofcode2020
 
 import (
 	"bufio"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"os"
 	"strconv"
 	"strings"
+	"time"
 )
+
+func Stopwatch(what string) func() {
+	start := time.Now()
+	return func() {
+		fmt.Printf("%s took %v\n", what, time.Since(start))
+	}
+}
 
 func Atoi(s []string) ([]int, error) {
 	var input []int

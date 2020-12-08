@@ -98,6 +98,7 @@ func PassportFieldsPresentAndCorrect(p Passport) bool {
 }
 
 func main() {
+	defer adventofcode2020.Stopwatch("Run")()
 	passwordChunks, _ := adventofcode2020.ReadSplittedInput("./input/day04.txt", "\n\n")
 	passports := ParsePassports(passwordChunks)
 	validPasswords := 0

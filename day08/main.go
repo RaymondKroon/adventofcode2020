@@ -86,11 +86,9 @@ func Repair(instructions []Instruction) int {
 }
 
 func main() {
+	defer adventofcode2020.Stopwatch("Run")()
 	instructionLines, _ := adventofcode2020.ReadInputLines("./input/day08.txt")
 	instructions := ParseInstructions(instructionLines)
-	//for _, i := range instructions {
-	//    fmt.Println(i)
-	//}
 
 	fmt.Printf("(part1) Acc: %d\n", RunUntilLoopOrNormalExit(instructions).Acc)
 	fmt.Printf("(part2) Acc: %d\n", Repair(instructions))
