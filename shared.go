@@ -111,3 +111,31 @@ func StringInSlice(a string, list []string) bool {
 	}
 	return false
 }
+
+func Sum(array []int) int {
+	result := 0
+	for _, v := range array {
+		result += v
+	}
+	return result
+}
+
+func Min(array []int) int {
+	result := array[0]
+	for _, v := range array[1:] {
+		if result > v {
+			result = v
+		}
+	}
+	return result
+}
+
+func Max(array []int) int {
+	result := array[0]
+	for _, v := range array[1:] {
+		if result < v {
+			result = v
+		}
+	}
+	return result
+}
