@@ -38,44 +38,68 @@ func (c Cell) String() string {
 	}
 }
 
-type FloorPlan = map[Coord]Cell
+type FloorPlan struct {
+	nRows int
+	nCols int
+	inner [][]Cell
+}
 
-func solve(plan FloorPlan, occupiedLimit int, neighbourFinder func(plan FloorPlan, coord Coord, delta Coord) Coord) int {
+func (fp *FloorPlan) Get(row int, col int) (Cell, bool) {
+	if row < 0 || col < 0 || row >= fp.nRows || col >= fp.nCols {
+		return Empty, false
+	} else {
+		return fp.inner[row][col], true
+	}
+}
+
+func solve(plan FloorPlan, occupiedLimit int, neighbourFinder func(plan *FloorPlan, coord Coord, delta Coord) Coord) int {
 	delta := []Coord{{-1, -1}, {-1, 0}, {-1, 1}, {0, -1}, {0, 1}, {1, -1}, {1, 0}, {1, 1}}
 
 	for changed := true; changed; {
 		changed = false
-		next := FloorPlan{}
+		clonedInner := make([][]Cell, len(plan.inner))
+		for i := range plan.inner {
+			clonedInner[i] = make([]Cell, len(plan.inner[i]))
+		}
+		next := FloorPlan{nRows: plan.nRows, nCols: plan.nCols, inner: clonedInner}
 
-		for coord, cell := range plan {
-			occupiedNeighbours := 0
-			for _, d := range delta {
-				if plan[neighbourFinder(plan, coord, d)] == Occupied {
-					occupiedNeighbours++
+		for r := 0; r < plan.nRows; r++ {
+			for c := 0; c < plan.nCols; c++ {
+				coord := Coord{row: r, col: c}
+				cell, _ := plan.Get(r, c)
+
+				occupiedNeighbours := 0
+				for _, d := range delta {
+					neighbourCoord := neighbourFinder(&plan, coord, d)
+					if n, ok := plan.Get(neighbourCoord.row, neighbourCoord.col); ok && n == Occupied {
+						occupiedNeighbours++
+					}
 				}
-			}
 
-			if cell == Occupied && occupiedNeighbours >= occupiedLimit {
-				next[coord] = Empty
-				changed = true
-				continue
-			}
-			if cell == Empty && occupiedNeighbours == 0 {
-				next[coord] = Occupied
-				changed = true
-				continue
-			}
+				if cell == Occupied && occupiedNeighbours >= occupiedLimit {
+					next.inner[r][c] = Empty
+					changed = true
+					continue
+				}
+				if cell == Empty && occupiedNeighbours == 0 {
+					next.inner[r][c] = Occupied
+					changed = true
+					continue
+				}
 
-			next[coord] = cell
+				next.inner[r][c] = cell
+			}
 		}
 
 		plan = next
 	}
 
 	occupied := 0
-	for _, v := range plan {
-		if v == Occupied {
-			occupied += 1
+	for _, row := range plan.inner {
+		for _, cell := range row {
+			if cell == Occupied {
+				occupied += 1
+			}
 		}
 	}
 
@@ -83,13 +107,13 @@ func solve(plan FloorPlan, occupiedLimit int, neighbourFinder func(plan FloorPla
 }
 
 func solvePart1(plan FloorPlan) (occupied int) {
-	return solve(plan, 4, func(plan FloorPlan, coord Coord, delta Coord) Coord { return coord.AddValue(delta) })
+	return solve(plan, 4, func(plan *FloorPlan, coord Coord, delta Coord) Coord { return coord.AddValue(delta) })
 }
 
 func solvePart2(plan FloorPlan) (occupied int) {
-	return solve(plan, 5, func(plan FloorPlan, coord Coord, delta Coord) Coord {
+	return solve(plan, 5, func(plan *FloorPlan, coord Coord, delta Coord) Coord {
 		newCoord := coord.AddValue(delta)
-		for plan[newCoord] == Floor {
+		for n, ok := plan.Get(newCoord.row, newCoord.col); ok && n == Floor; n, ok = plan.Get(newCoord.row, newCoord.col) {
 			newCoord = newCoord.AddValue(delta)
 		}
 		return newCoord
@@ -97,8 +121,9 @@ func solvePart2(plan FloorPlan) (occupied int) {
 }
 
 func parseFloorplan(input []string) FloorPlan {
-	floorPlan := FloorPlan{}
+	floorPlan := make([][]Cell, len(input))
 	for r, line := range input {
+		row := make([]Cell, len(line))
 		for c, col := range line {
 			var t Cell
 			switch col {
@@ -108,22 +133,27 @@ func parseFloorplan(input []string) FloorPlan {
 			case 'L':
 				t = Empty
 			}
-			floorPlan[Coord{row: r, col: c}] = t
+			row[c] = t
 		}
+		floorPlan[r] = row
 	}
-	return floorPlan
+	return FloorPlan{
+		nRows: len(floorPlan),
+		nCols: len(floorPlan[0]),
+		inner: floorPlan,
+	}
 }
 
-func printFloorPlan(fp FloorPlan, nRow int, nCol int) {
-	for row := 0; row < nRow; row++ {
-		for col := 0; col < nCol; col++ {
-			fmt.Printf("%s", fp[Coord{row, col}].String())
-		}
-		fmt.Print("\n")
-	}
-
-	fmt.Println("----------")
-}
+//func printFloorPlan(fp FloorPlan, nRow int, nCol int) {
+//	for row := 0; row < nRow; row++ {
+//		for col := 0; col < nCol; col++ {
+//			fmt.Printf("%s", fp[Coord{row, col}].String())
+//		}
+//		fmt.Print("\n")
+//	}
+//
+//	fmt.Println("----------")
+//}
 
 func main() {
 	defer adventofcode2020.Stopwatch("Run")()
@@ -132,6 +162,6 @@ func main() {
 	p1 := solvePart1(floorplan) //2424
 	fmt.Println("(part1)", p1)
 
-	p2 := solvePart2(floorplan)
+	p2 := solvePart2(floorplan) //2208
 	fmt.Println("(part2)", p2)
 }
