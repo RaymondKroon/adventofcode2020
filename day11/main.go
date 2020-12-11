@@ -52,7 +52,7 @@ func (fp *FloorPlan) Get(row int, col int) (Cell, bool) {
 	}
 }
 
-func solve(plan FloorPlan, occupiedLimit int, neighbourFinder func(plan *FloorPlan, coord Coord, delta Coord) Coord) int {
+func solve(plan *FloorPlan, occupiedLimit int, neighbourFinder func(plan *FloorPlan, coord Coord, delta Coord) Coord) int {
 	delta := []Coord{{-1, -1}, {-1, 0}, {-1, 1}, {0, -1}, {0, 1}, {1, -1}, {1, 0}, {1, 1}}
 
 	for changed := true; changed; {
@@ -65,14 +65,23 @@ func solve(plan FloorPlan, occupiedLimit int, neighbourFinder func(plan *FloorPl
 
 		for r := 0; r < plan.nRows; r++ {
 			for c := 0; c < plan.nCols; c++ {
+
 				coord := Coord{row: r, col: c}
 				cell, _ := plan.Get(r, c)
 
+				next.inner[r][c] = cell
+				if cell == Floor {
+					continue
+				}
+
 				occupiedNeighbours := 0
 				for _, d := range delta {
-					neighbourCoord := neighbourFinder(&plan, coord, d)
+					neighbourCoord := neighbourFinder(plan, coord, d)
 					if n, ok := plan.Get(neighbourCoord.row, neighbourCoord.col); ok && n == Occupied {
 						occupiedNeighbours++
+						if occupiedNeighbours >= occupiedLimit {
+							break
+						}
 					}
 				}
 
@@ -86,12 +95,10 @@ func solve(plan FloorPlan, occupiedLimit int, neighbourFinder func(plan *FloorPl
 					changed = true
 					continue
 				}
-
-				next.inner[r][c] = cell
 			}
 		}
 
-		plan = next
+		plan = &next
 	}
 
 	occupied := 0
@@ -106,11 +113,11 @@ func solve(plan FloorPlan, occupiedLimit int, neighbourFinder func(plan *FloorPl
 	return occupied
 }
 
-func solvePart1(plan FloorPlan) (occupied int) {
+func solvePart1(plan *FloorPlan) (occupied int) {
 	return solve(plan, 4, func(plan *FloorPlan, coord Coord, delta Coord) Coord { return coord.AddValue(delta) })
 }
 
-func solvePart2(plan FloorPlan) (occupied int) {
+func solvePart2(plan *FloorPlan) (occupied int) {
 	return solve(plan, 5, func(plan *FloorPlan, coord Coord, delta Coord) Coord {
 		newCoord := coord.AddValue(delta)
 		for n, ok := plan.Get(newCoord.row, newCoord.col); ok && n == Floor; n, ok = plan.Get(newCoord.row, newCoord.col) {
@@ -159,9 +166,9 @@ func main() {
 	defer adventofcode2020.Stopwatch("Run")()
 	lines, _ := adventofcode2020.ReadInputLines("./input/day11.txt")
 	floorplan := parseFloorplan(lines)
-	p1 := solvePart1(floorplan) //2424
+	p1 := solvePart1(&floorplan) //2424
 	fmt.Println("(part1)", p1)
 
-	p2 := solvePart2(floorplan) //2208
+	p2 := solvePart2(&floorplan) //2208
 	fmt.Println("(part2)", p2)
 }

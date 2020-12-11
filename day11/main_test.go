@@ -15,7 +15,7 @@ func BenchmarkParser(b *testing.B) {
 func BenchmarkSolvers(b *testing.B) {
 	benchmarks := []struct {
 		name string
-		fn   func(fp FloorPlan) int
+		fn   func(fp *FloorPlan) int
 	}{
 		{name: "part1", fn: solvePart1},
 		{name: "part2", fn: solvePart2},
@@ -27,7 +27,7 @@ func BenchmarkSolvers(b *testing.B) {
 	for _, bm := range benchmarks {
 		b.Run(bm.name, func(b *testing.B) {
 			for i := 0; i < b.N; i++ {
-				bm.fn(floorplan)
+				bm.fn(&floorplan)
 			}
 		})
 	}
