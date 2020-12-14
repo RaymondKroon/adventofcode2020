@@ -3,6 +3,7 @@ package main
 import (
 	"adventofcode2020"
 	"fmt"
+	"math"
 	"reflect"
 	"regexp"
 	"sort"
@@ -55,20 +56,21 @@ func (m Mask) floatingMasks() []Mask {
 	for i, match := range matches {
 		indexes[i] = match[0]
 	}
-	permutations := make([]Permutation, 0, 50)
-	permute(indexes, []int{}, &permutations)
-	masks := make([]Mask, len(permutations))
-	for i, p := range permutations {
+	nPermutations := int(math.Pow(2, float64(len(indexes))))
+	masks := make([]Mask, nPermutations)
+	for p := 0; p < nPermutations; p++ {
 		mask := m.mask
 		mask = strings.ReplaceAll(mask, "0", "-")
-		for _, zero := range p.zeros {
-			mask = replaceAtIndex(mask, '0', zero)
+		for i, idx := range indexes {
+			if 1<<i&p != 0 {
+				mask = replaceAtIndex(mask, '1', idx)
+			} else {
+				mask = replaceAtIndex(mask, '0', idx)
+			}
 		}
-		for _, one := range p.ones {
-			mask = replaceAtIndex(mask, '1', one)
-		}
-		masks[i] = Mask{mask: mask}
+		masks[p] = Mask{mask: mask}
 	}
+
 	return masks
 }
 
