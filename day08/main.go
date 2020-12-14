@@ -41,16 +41,11 @@ func RunUntilLoopOrNormalExit(instructions []Instruction) Exit {
 		switch instruction.Op {
 		case "nop":
 			index++
-			break
 		case "acc":
 			index++
 			acc += instruction.Arg
-			break
 		case "jmp":
 			index += instruction.Arg
-			break
-		default:
-			break
 		}
 	}
 

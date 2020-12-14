@@ -136,7 +136,6 @@ func parseFloorplan(input []string) FloorPlan {
 			switch col {
 			case '.':
 				t = Floor
-				break
 			case 'L':
 				t = Empty
 			}

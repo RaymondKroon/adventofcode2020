@@ -50,26 +50,19 @@ func SolvePart1(instructions []Instruction) int {
 		switch i.Action {
 		case 'N':
 			pos.y += i.Value
-			break
 		case 'S':
 			pos.y -= i.Value
-			break
 		case 'E':
 			pos.x += i.Value
-			break
 		case 'W':
 			pos.x -= i.Value
-			break
 		case 'R':
 			dir = rotate(dir, i.Value/90, 1)
-			break
 		case 'L':
 			dir = rotate(dir, i.Value/90, -1)
-			break
 		case 'F':
 			pos.x += dir.x * i.Value
 			pos.y += dir.y * i.Value
-			break
 		}
 	}
 
