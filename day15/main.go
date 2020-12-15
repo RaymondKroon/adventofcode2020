@@ -6,6 +6,8 @@ import (
 	"regexp"
 )
 
+type Int = uint32
+
 func parseStart(input string) []int {
 	regex := regexp.MustCompile(`([0-9]+)`)
 	matches := regex.FindAllStringSubmatch(input, -1)
@@ -18,23 +20,23 @@ func parseStart(input string) []int {
 }
 
 func PlayGame(start []int, turns int) int {
-	mem := make([]int, turns)
-	last := 0
+	mem := make([]Int, turns)
+	last := Int(0)
 	for i, s := range start {
-		last = s
-		mem[s] = i + 1
+		last = Int(s)
+		mem[s] = Int(i + 1)
 	}
 	for i := len(start); i < turns; i++ {
 		if lastTs := mem[last]; lastTs > 0 {
-			mem[last] = i
-			last = i - lastTs
+			mem[last] = Int(i)
+			last = Int(i) - lastTs
 		} else {
-			mem[last] = i
+			mem[last] = Int(i)
 			last = 0
 		}
 	}
 
-	return last
+	return int(last)
 }
 
 func main() {

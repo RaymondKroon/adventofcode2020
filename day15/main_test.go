@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-func TestPart1PlayGame(t *testing.T) {
+func TestPlayGame(t *testing.T) {
 	type args struct {
 		start []int
 		turns int
@@ -35,5 +35,11 @@ func TestPart1PlayGame(t *testing.T) {
 				t.Errorf("PlayGame() = %v, want %v", got, tt.want)
 			}
 		})
+	}
+}
+
+func Benchmark(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		PlayGame([]int{3, 1, 2}, 30000000)
 	}
 }
