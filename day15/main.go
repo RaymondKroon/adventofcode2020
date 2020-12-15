@@ -17,7 +17,7 @@ func parseStart(input string) []int {
 	return result
 }
 
-func Part1PlayGame(start []int, turns int) int {
+func PlayGame(start []int, turns int) int {
 	mem := make(map[int]int)
 	last := 0
 	for i, s := range start {
@@ -41,6 +41,6 @@ func main() {
 	defer adventofcode2020.Stopwatch("Run")()
 	input, _ := adventofcode2020.ReadInput("./input/day15.txt")
 	start := parseStart(input)
-	fmt.Println("(part1)", Part1PlayGame(start, 2020))
-	fmt.Println("(part2)", Part1PlayGame(start, 30000000))
+	fmt.Println("(part1)", PlayGame(start, 2020))
+	fmt.Println("(part2)", PlayGame(start, 30000000))
 }

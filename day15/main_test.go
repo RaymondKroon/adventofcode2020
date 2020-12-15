@@ -31,8 +31,8 @@ func TestPart1PlayGame(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(fmt.Sprintf("%v-%d", tt.args.start, tt.args.turns), func(t *testing.T) {
-			if got := Part1PlayGame(tt.args.start, tt.args.turns); got != tt.want {
-				t.Errorf("Part1PlayGame() = %v, want %v", got, tt.want)
+			if got := PlayGame(tt.args.start, tt.args.turns); got != tt.want {
+				t.Errorf("PlayGame() = %v, want %v", got, tt.want)
 			}
 		})
 	}
