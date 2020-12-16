@@ -1,7 +1,7 @@
 package main
 
 import (
-	"adventofcode2020"
+	"adventofcode2020/util"
 	"fmt"
 	"math"
 	"reflect"
@@ -126,7 +126,7 @@ func parseInstruction(input []string) []interface{} {
 			result[i] = Mask{mask: m[2]}
 		} else {
 			address := addressRegex.FindStringSubmatch(m[1])[0]
-			result[i] = SetMem{address: address, value: adventofcode2020.MustAtoi(m[2])}
+			result[i] = SetMem{address: address, value: util.MustAtoi(m[2])}
 		}
 	}
 
@@ -169,7 +169,7 @@ func solvePart2(program []interface{}) int {
 			sm := instruction.(SetMem)
 			//masks := mask.floatingMasks()
 			for _, m := range masks {
-				mem[m.applyV2(adventofcode2020.MustAtoi(sm.address))] = sm.value
+				mem[m.applyV2(util.MustAtoi(sm.address))] = sm.value
 			}
 		}
 	}
@@ -185,8 +185,8 @@ func solvePart2(program []interface{}) int {
 }
 
 func main() {
-	defer adventofcode2020.Stopwatch("Run")()
-	lines, _ := adventofcode2020.ReadInputLines("./input/day14.txt")
+	defer util.Stopwatch("Run")()
+	lines, _ := util.ReadInputLines("./input/day14.txt")
 	program := parseInstruction(lines)
 
 	fmt.Println("(part1)", solvePart1(program)) // 10885823581193

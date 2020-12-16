@@ -1,7 +1,7 @@
 package main
 
 import (
-	"adventofcode2020"
+	"adventofcode2020/util"
 	"fmt"
 	"regexp"
 	"strconv"
@@ -81,8 +81,8 @@ func Part2CountCorrectPasswords(input []PasswordLine) int {
 }
 
 func main() {
-	defer adventofcode2020.Stopwatch("Run")()
-	stringInput, _ := adventofcode2020.ReadInputLines("./input/day02.txt")
+	defer util.Stopwatch("Run")()
+	stringInput, _ := util.ReadInputLines("./input/day02.txt")
 	input, _ := ParseInput(stringInput)
 	fmt.Printf("(part1) Correct password: %d\n", Part1CountCorrectPasswords(input))
 	fmt.Printf("(part2) Correct password: %d\n", Part2CountCorrectPasswords(input))

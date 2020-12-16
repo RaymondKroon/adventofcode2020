@@ -1,12 +1,12 @@
 package main
 
 import (
-	"adventofcode2020"
+	"adventofcode2020/util"
 	"testing"
 )
 
 func BenchmarkParser(b *testing.B) {
-	lines, _ := adventofcode2020.ReadInputLines("../input/day11.txt")
+	lines, _ := util.ReadInputLines("../input/day11.txt")
 	for i := 0; i < b.N; i++ {
 		parseFloorplan(lines)
 	}
@@ -21,7 +21,7 @@ func BenchmarkSolvers(b *testing.B) {
 		{name: "part2", fn: solvePart2},
 	}
 
-	lines, _ := adventofcode2020.ReadInputLines("../input/day11.txt")
+	lines, _ := util.ReadInputLines("../input/day11.txt")
 	floorplan := parseFloorplan(lines)
 
 	for _, bm := range benchmarks {

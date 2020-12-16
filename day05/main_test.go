@@ -1,7 +1,7 @@
 package main
 
 import (
-	"adventofcode2020"
+	"adventofcode2020/util"
 	"testing"
 )
 
@@ -13,7 +13,7 @@ func Benchmark(b *testing.B) {
 		{name: "calculate", fn: ParseBoardingPassOld},
 		{name: "bitshift", fn: ParseBoardingPass},
 	}
-	stringInput, _ := adventofcode2020.ReadInputLines("../input/day05.txt")
+	stringInput, _ := util.ReadInputLines("../input/day05.txt")
 	for _, bm := range benchmarks {
 		b.Run(bm.name, func(b *testing.B) {
 			for i := 0; i < b.N; i++ {

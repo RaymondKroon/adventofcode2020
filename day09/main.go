@@ -1,7 +1,7 @@
 package main
 
 import (
-	"adventofcode2020"
+	"adventofcode2020/util"
 	"fmt"
 	"sort"
 )
@@ -36,8 +36,8 @@ func SolvePart1(numbers []int, preambleSize int) int {
 func SolvePart2(numbers []int, target int) int {
 	for sliceSize := 2; sliceSize < len(numbers); sliceSize++ {
 		for i := 0; i < len(numbers)-sliceSize; i++ {
-			if adventofcode2020.Sum(numbers[i:i+sliceSize]) == target {
-				return adventofcode2020.Min(numbers[i:i+sliceSize]) + adventofcode2020.Max(numbers[i:i+sliceSize])
+			if util.Sum(numbers[i:i+sliceSize]) == target {
+				return util.Min(numbers[i:i+sliceSize]) + util.Max(numbers[i:i+sliceSize])
 			}
 		}
 	}
@@ -45,9 +45,9 @@ func SolvePart2(numbers []int, target int) int {
 }
 
 func main() {
-	defer adventofcode2020.Stopwatch("Run")()
-	lines, _ := adventofcode2020.ReadInputLines("./input/day09.txt")
-	numbers, _ := adventofcode2020.Atoi(lines)
+	defer util.Stopwatch("Run")()
+	lines, _ := util.ReadInputLines("./input/day09.txt")
+	numbers, _ := util.Atoi(lines)
 	p1 := SolvePart1(numbers, 25)
 	fmt.Printf("(part1) %d\n", p1)
 	p2 := SolvePart2(numbers, p1)

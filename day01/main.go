@@ -1,14 +1,14 @@
 package main
 
 import (
-	"adventofcode2020"
+	"adventofcode2020/util"
 	"sort"
 )
 
 func main() {
-	defer adventofcode2020.Stopwatch("Run")()
-	stringInput, _ := adventofcode2020.ReadInputLines("./input/day01.txt")
-	input, _ := adventofcode2020.Atoi(stringInput)
+	defer util.Stopwatch("Run")()
+	stringInput, _ := util.ReadInputLines("./input/day01.txt")
+	input, _ := util.Atoi(stringInput)
 
 	println(part1(input))
 	println(part2sorted(input))

@@ -1,7 +1,7 @@
 package main
 
 import (
-	"adventofcode2020"
+	"adventofcode2020/util"
 	"fmt"
 	"strings"
 )
@@ -34,8 +34,8 @@ func CountAnswers(input string) Counters {
 }
 
 func main() {
-	defer adventofcode2020.Stopwatch("Run")()
-	groupChunks, _ := adventofcode2020.ReadSplittedInput("./input/day06.txt", "\n\n")
+	defer util.Stopwatch("Run")()
+	groupChunks, _ := util.ReadSplittedInput("./input/day06.txt", "\n\n")
 	any := 0
 	all := 0
 	for _, g := range groupChunks {

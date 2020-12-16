@@ -1,7 +1,7 @@
 package main
 
 import (
-	"adventofcode2020"
+	"adventofcode2020/util"
 	"fmt"
 	"sort"
 )
@@ -32,7 +32,7 @@ func Part2(input []int) int {
 		v := voltages[i]
 		next := voltages[i:]
 		for _, step := range []int{1, 2, 3} {
-			if adventofcode2020.Contains(next, v) {
+			if util.Contains(next, v) {
 				nPaths[v+step] += nPaths[v]
 			}
 		}
@@ -42,9 +42,9 @@ func Part2(input []int) int {
 }
 
 func main() {
-	defer adventofcode2020.Stopwatch("Run")()
-	lines, _ := adventofcode2020.ReadInputLines("./input/day10.txt")
-	voltages, _ := adventofcode2020.Atoi(lines)
+	defer util.Stopwatch("Run")()
+	lines, _ := util.ReadInputLines("./input/day10.txt")
+	voltages, _ := util.Atoi(lines)
 
 	p1 := Part1(voltages)
 	fmt.Println("(part1)", p1)

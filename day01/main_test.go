@@ -1,7 +1,7 @@
 package main
 
 import (
-	"adventofcode2020"
+	"adventofcode2020/util"
 	"testing"
 )
 
@@ -15,8 +15,8 @@ func Benchmark(b *testing.B) {
 		{name: "part2sorted", fn: part2sorted},
 	}
 
-	stringInput, _ := adventofcode2020.ReadInputLines("../input/day01.txt")
-	input, _ := adventofcode2020.Atoi(stringInput)
+	stringInput, _ := util.ReadInputLines("../input/day01.txt")
+	input, _ := util.Atoi(stringInput)
 
 	for _, bm := range benchmarks {
 		b.Run(bm.name, func(b *testing.B) {

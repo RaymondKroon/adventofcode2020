@@ -1,7 +1,7 @@
 package main
 
 import (
-	"adventofcode2020"
+	"adventofcode2020/util"
 	"fmt"
 	"regexp"
 )
@@ -13,7 +13,7 @@ func parseStart(input string) []int {
 	matches := regex.FindAllStringSubmatch(input, -1)
 	result := make([]int, len(matches))
 	for i := 0; i < len(matches); i++ {
-		result[i] = adventofcode2020.MustAtoi(matches[i][1])
+		result[i] = util.MustAtoi(matches[i][1])
 	}
 
 	return result
@@ -40,8 +40,8 @@ func PlayGame(start []int, turns int) int {
 }
 
 func main() {
-	defer adventofcode2020.Stopwatch("Run")()
-	input, _ := adventofcode2020.ReadInput("./input/day15.txt")
+	defer util.Stopwatch("Run")()
+	input, _ := util.ReadInput("./input/day15.txt")
 	start := parseStart(input)
 	fmt.Println("(part1)", PlayGame(start, 2020))
 	fmt.Println("(part2)", PlayGame(start, 30000000))

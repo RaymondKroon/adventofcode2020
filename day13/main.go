@@ -1,7 +1,7 @@
 package main
 
 import (
-	"adventofcode2020"
+	"adventofcode2020/util"
 	"fmt"
 	"regexp"
 )
@@ -17,7 +17,7 @@ func parseBusLines(input string) (result []BusLine) {
 	matches := regex.FindAllStringSubmatch(input, -1)
 	for i, m := range matches {
 		if m[1] != "x" {
-			result = append(result, BusLine{adventofcode2020.MustAtoi(m[1]), i})
+			result = append(result, BusLine{util.MustAtoi(m[1]), i})
 		}
 	}
 
@@ -62,9 +62,9 @@ func solvePart2(busLines []BusLine) int {
 }
 
 func main() {
-	defer adventofcode2020.Stopwatch("Run")()
-	lines, _ := adventofcode2020.ReadInputLines("./input/day13.txt")
-	earliestDeparture := adventofcode2020.MustAtoi(lines[0])
+	defer util.Stopwatch("Run")()
+	lines, _ := util.ReadInputLines("./input/day13.txt")
+	earliestDeparture := util.MustAtoi(lines[0])
 	busLines := parseBusLines(lines[1])
 
 	fmt.Println("(part1)", solvePart1(earliestDeparture, busLines)) // 3997

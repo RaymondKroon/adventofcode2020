@@ -1,7 +1,7 @@
 package main
 
 import (
-	"adventofcode2020"
+	"adventofcode2020/util"
 	"fmt"
 	"sort"
 )
@@ -69,8 +69,8 @@ func ParseBoardingPass(input string) BoardingPass {
 }
 
 func main() {
-	defer adventofcode2020.Stopwatch("Run")()
-	stringInput, _ := adventofcode2020.ReadInputLines("./input/day05.txt")
+	defer util.Stopwatch("Run")()
+	stringInput, _ := util.ReadInputLines("./input/day05.txt")
 	var bps []BoardingPass
 	for _, input := range stringInput {
 		bps = append(bps, ParseBoardingPass(input))

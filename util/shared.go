@@ -1,4 +1,4 @@
-package adventofcode2020
+package util
 
 import (
 	"bufio"
@@ -101,15 +101,6 @@ func ReadInputLines(filePath string) ([]string, error) {
 	}
 
 	return text, nil
-}
-
-func StringInSlice(a string, list []string) bool {
-	for _, b := range list {
-		if b == a {
-			return true
-		}
-	}
-	return false
 }
 
 func Sum(array []int) int {

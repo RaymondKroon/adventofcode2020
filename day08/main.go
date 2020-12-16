@@ -1,7 +1,7 @@
 package main
 
 import (
-	"adventofcode2020"
+	"adventofcode2020/util"
 	"fmt"
 	"regexp"
 )
@@ -18,7 +18,7 @@ func ParseInstructions(input []string) []Instruction {
 		match := regex.FindStringSubmatch(line)
 		result[i] = Instruction{
 			Op:  match[1],
-			Arg: adventofcode2020.MustAtoi(match[2]),
+			Arg: util.MustAtoi(match[2]),
 		}
 	}
 
@@ -81,8 +81,8 @@ func Repair(instructions []Instruction) int {
 }
 
 func main() {
-	defer adventofcode2020.Stopwatch("Run")()
-	instructionLines, _ := adventofcode2020.ReadInputLines("./input/day08.txt")
+	defer util.Stopwatch("Run")()
+	instructionLines, _ := util.ReadInputLines("./input/day08.txt")
 	instructions := ParseInstructions(instructionLines)
 
 	fmt.Printf("(part1) Acc: %d\n", RunUntilLoopOrNormalExit(instructions).Acc)

@@ -1,7 +1,7 @@
 package main
 
 import (
-	"adventofcode2020"
+	"adventofcode2020/util"
 	"container/list"
 	"fmt"
 	"regexp"
@@ -87,7 +87,7 @@ func Part1CountShinyGoldParents(rules []BagRule) int {
 
 		new := findBagsWichContains(rules, e.Value.(string))
 		for _, n := range new {
-			if !adventofcode2020.StringInSlice(n.Color, selected) {
+			if !util.StringInSlice(n.Color, selected) {
 				selected = append(selected, n.Color)
 				queue.PushBack(n.Color)
 			}
@@ -130,8 +130,8 @@ func Part2CountShinyGoldChildren(rules []BagRule) int {
 }
 
 func main() {
-	defer adventofcode2020.Stopwatch("Run")()
-	inputLines, _ := adventofcode2020.ReadInputLines("./input/day07.txt")
+	defer util.Stopwatch("Run")()
+	inputLines, _ := util.ReadInputLines("./input/day07.txt")
 	rules := ParseBagRules(inputLines)
 	answer1 := Part1CountShinyGoldParents(rules) //172
 	fmt.Printf("(part1) bags %d\n", answer1)

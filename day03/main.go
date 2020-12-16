@@ -1,7 +1,7 @@
 package main
 
 import (
-	"adventofcode2020"
+	"adventofcode2020/util"
 	"fmt"
 )
 
@@ -93,8 +93,8 @@ func Part2(m Map) int {
 }
 
 func main() {
-	defer adventofcode2020.Stopwatch("Run")()
-	stringInput, _ := adventofcode2020.ReadInputLines("./input/day03.txt")
+	defer util.Stopwatch("Run")()
+	stringInput, _ := util.ReadInputLines("./input/day03.txt")
 	m := CreateMap(stringInput)
 
 	fmt.Printf("(part1) nTrees: %d\n", Part1(m))

@@ -1,7 +1,7 @@
 package main
 
 import (
-	"adventofcode2020"
+	"adventofcode2020/util"
 	"fmt"
 	"regexp"
 	"strconv"
@@ -85,7 +85,7 @@ func PassportFieldsPresentAndCorrect(p Passport) bool {
 		return false
 	}
 
-	if !adventofcode2020.StringInSlice(p["ecl"], []string{"amb", "blu", "brn", "gry", "grn", "hzl", "oth"}) {
+	if !util.StringInSlice(p["ecl"], []string{"amb", "blu", "brn", "gry", "grn", "hzl", "oth"}) {
 		return false
 	}
 
@@ -98,8 +98,8 @@ func PassportFieldsPresentAndCorrect(p Passport) bool {
 }
 
 func main() {
-	defer adventofcode2020.Stopwatch("Run")()
-	passwordChunks, _ := adventofcode2020.ReadSplittedInput("./input/day04.txt", "\n\n")
+	defer util.Stopwatch("Run")()
+	passwordChunks, _ := util.ReadSplittedInput("./input/day04.txt", "\n\n")
 	passports := ParsePassports(passwordChunks)
 	validPasswords := 0
 	for _, p := range *passports {

@@ -1,7 +1,7 @@
 package main
 
 import (
-	"adventofcode2020"
+	"adventofcode2020/util"
 	"container/list"
 	"fmt"
 	"regexp"
@@ -9,6 +9,9 @@ import (
 )
 
 const EOL = "\r\n"
+
+// go generate day16/main.go
+//go:generate genny -in=../util/set.go -out=gen-$GOFILE -pkg=main gen "ValueType=Range"
 
 type Range struct {
 	Start        int
@@ -22,34 +25,6 @@ func (r *Range) InRange(value int) bool {
 type Rule struct {
 	Name   string
 	Ranges []Range
-}
-
-type FieldRange struct {
-	inner map[string]bool
-}
-
-func CreateFieldRange() FieldRange {
-	return FieldRange{inner: make(map[string]bool, 50)}
-}
-
-func (fr *FieldRange) First() string {
-	for k, _ := range fr.inner {
-		return k
-	}
-
-	panic("Empty FieldRange")
-}
-
-func (fr *FieldRange) Len() int {
-	return len(fr.inner)
-}
-
-func (fr *FieldRange) Add(field string) {
-	fr.inner[field] = true
-}
-
-func (fr *FieldRange) Remove(field string) {
-	delete(fr.inner, field)
 }
 
 func (rule *Rule) ValueInRange(value int) bool {
@@ -81,12 +56,12 @@ func parseRules(input string) []Rule {
 		rules[i] = Rule{
 			Name: match[1],
 			Ranges: []Range{{
-				Start:        adventofcode2020.MustAtoi(match[2]),
-				IncludingEnd: adventofcode2020.MustAtoi(match[3]),
+				Start:        util.MustAtoi(match[2]),
+				IncludingEnd: util.MustAtoi(match[3]),
 			},
 				{
-					Start:        adventofcode2020.MustAtoi(match[4]),
-					IncludingEnd: adventofcode2020.MustAtoi(match[5]),
+					Start:        util.MustAtoi(match[4]),
+					IncludingEnd: util.MustAtoi(match[5]),
 				}},
 		}
 	}
@@ -97,7 +72,7 @@ func parseRules(input string) []Rule {
 func parseMyTicket(input string) []int {
 	lines := strings.Split(input, EOL)
 	nums := strings.Split(lines[1], ",")
-	result, _ := adventofcode2020.Atoi(nums)
+	result, _ := util.Atoi(nums)
 	return result
 }
 
@@ -106,7 +81,7 @@ func parseOtherTickets(input string) [][]int {
 	result := make([][]int, len(lines)-1)
 	for i, line := range lines[1:] {
 		nums := strings.Split(line, ",")
-		resultLine, _ := adventofcode2020.Atoi(nums)
+		resultLine, _ := util.Atoi(nums)
 		result[i] = resultLine
 	}
 
@@ -137,17 +112,17 @@ func Part1CheckErrorRate(tickets [][]int, rules []Rule) int {
 		}
 	}
 
-	return adventofcode2020.Sum(invalid)
+	return util.Sum(invalid)
 }
 
 func Part2IdentifyValues(myTicket []int, otherTickets [][]int, rules []Rule) int {
 	checkAll := checkAllRule(rules)
 
 	nFields := len(myTicket)
-	fieldOrder := make([]FieldRange, nFields)
+	fieldOrder := make([]util.StringSet, nFields)
 
 	for i := 0; i < nFields; i++ {
-		fieldOrder[i] = CreateFieldRange()
+		fieldOrder[i] = util.NewStringSet()
 		for _, rule := range rules {
 			fieldOrder[i].Add(rule.Name)
 		}
@@ -199,8 +174,8 @@ func Part2IdentifyValues(myTicket []int, otherTickets [][]int, rules []Rule) int
 }
 
 func main() {
-	defer adventofcode2020.Stopwatch("Run")()
-	input, _ := adventofcode2020.ReadSplittedInput("./input/day16.txt", EOL+EOL)
+	defer util.Stopwatch("Run")()
+	input, _ := util.ReadSplittedInput("./input/day16.txt", EOL+EOL)
 	rules := parseRules(input[0])
 	myTicket := parseMyTicket(input[1])
 	otherTickets := parseOtherTickets(input[2])

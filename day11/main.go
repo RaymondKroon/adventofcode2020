@@ -1,7 +1,7 @@
 package main
 
 import (
-	"adventofcode2020"
+	"adventofcode2020/util"
 	"fmt"
 )
 
@@ -162,8 +162,8 @@ func parseFloorplan(input []string) FloorPlan {
 //}
 
 func main() {
-	defer adventofcode2020.Stopwatch("Run")()
-	lines, _ := adventofcode2020.ReadInputLines("./input/day11.txt")
+	defer util.Stopwatch("Run")()
+	lines, _ := util.ReadInputLines("./input/day11.txt")
 	floorplan := parseFloorplan(lines)
 	p1 := solvePart1(&floorplan) //2424
 	fmt.Println("(part1)", p1)

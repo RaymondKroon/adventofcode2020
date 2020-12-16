@@ -1,7 +1,7 @@
 package main
 
 import (
-	"adventofcode2020"
+	"adventofcode2020/util"
 	"fmt"
 	"math"
 	"regexp"
@@ -22,7 +22,7 @@ func parseInstruction(input []string) []Instruction {
 	instructions := make([]Instruction, len(input))
 	for i, l := range input {
 		m := regex.FindStringSubmatch(l)
-		instructions[i] = Instruction{Action: rune(m[1][0]), Value: adventofcode2020.MustAtoi(m[2])}
+		instructions[i] = Instruction{Action: rune(m[1][0]), Value: util.MustAtoi(m[2])}
 	}
 
 	return instructions
@@ -97,8 +97,8 @@ func SolvePart2(instructions []Instruction) int {
 }
 
 func main() {
-	defer adventofcode2020.Stopwatch("Run")()
-	lines, _ := adventofcode2020.ReadInputLines("./input/day12.txt")
+	defer util.Stopwatch("Run")()
+	lines, _ := util.ReadInputLines("./input/day12.txt")
 	instructions := parseInstruction(lines)
 	p1 := SolvePart1(instructions)
 	fmt.Println("(part1)", p1)
