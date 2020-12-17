@@ -49,18 +49,6 @@ func (p Point) Neighbours4d() (points []Point) {
 	return points
 }
 
-func (p Point) ActiveDeltas(pocket Pocket, deltas []Point) int {
-	active := 0
-	for _, d := range deltas {
-		n := p.Add(d)
-		if pocket[n] {
-			active++
-		}
-	}
-
-	return active
-}
-
 type Pocket = map[Point]bool
 
 func createPocket(input string) Pocket {
@@ -70,13 +58,9 @@ func createPocket(input string) Pocket {
 	cubes := make(map[Point]bool, sx*sy)
 	for x, line := range lines {
 		for y, c := range line {
-			var active bool
 			if string(c) == "#" {
-				active = true
-			} else {
-				active = false
+				cubes[Point{x, y, 0, 0}] = true
 			}
-			cubes[Point{x, y, 0, 0}] = active
 		}
 	}
 
@@ -87,31 +71,35 @@ func solve(pocket Pocket, cycles int, neighbours func(p Point) []Point) int {
 	deltas := neighbours(Point{0, 0, 0, 0})
 
 	for i := 0; i < cycles; i++ {
-		// increase Pocket
+
+		next := Pocket{}
+		inactive := make(map[Point]int)
 		for point, _ := range pocket {
+
+			active := 0
+
 			for _, d := range deltas {
 				n := point.Add(d)
-				pocket[n] = pocket[n]
+				if pocket[n] {
+					active++
+				} else {
+					inactive[n] += 1
+				}
 			}
-		}
 
-		new := Pocket{}
-		for point, _ := range pocket {
-			activeNeighbours := point.ActiveDeltas(pocket, deltas)
-
-			if pocket[point] {
-				if activeNeighbours == 2 || activeNeighbours == 3 {
-					new[point] = true
-				}
-			} else {
-				if activeNeighbours == 3 {
-					new[point] = true
-				}
+			if active == 2 || active == 3 {
+				next[point] = true
 			}
 
 		}
 
-		pocket = new
+		for p, n := range inactive {
+			if n == 3 {
+				next[p] = true
+			}
+		}
+
+		pocket = next
 	}
 
 	total := 0
@@ -132,4 +120,5 @@ func main() {
 
 	fmt.Println("(part1)", solve(pocket, 6, func(p Point) []Point { return p.Neighbours3d() })) // 317
 	fmt.Println("(part2)", solve(pocket, 6, func(p Point) []Point { return p.Neighbours4d() })) // 1692
+
 }
