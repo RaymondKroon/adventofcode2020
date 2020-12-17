@@ -13,6 +13,10 @@ type Point struct {
 	W int
 }
 
+func (p Point) Add(other Point) Point {
+	return Point{p.X + other.X, p.Y + other.Y, p.Z + other.Z, p.W + other.W}
+}
+
 func (p Point) Neighbours3d() (points []Point) {
 	delta := []int{-1, 0, 1}
 	for _, dx := range delta {
@@ -68,10 +72,13 @@ func createPocket(input string) Pocket {
 }
 
 func solve(pocket Pocket, cycles int, neighbours func(p Point) []Point) int {
+	deltas := neighbours(Point{0, 0, 0, 0})
+
 	for i := 0; i < cycles; i++ {
 		// increase Pocket
 		for point, _ := range pocket {
-			for _, n := range neighbours(point) {
+			for _, d := range deltas {
+				n := point.Add(d)
 				pocket[n] = pocket[n]
 			}
 		}
@@ -79,7 +86,8 @@ func solve(pocket Pocket, cycles int, neighbours func(p Point) []Point) int {
 		new := Pocket{}
 		for point, _ := range pocket {
 			activeNeighbours := 0
-			for _, n := range neighbours(point) {
+			for _, d := range deltas {
+				n := point.Add(d)
 				if pocket[n] {
 					activeNeighbours++
 				}
@@ -116,6 +124,6 @@ func main() {
 
 	pocket := createPocket(input)
 
-	fmt.Println("(part1)", solve(pocket, 6, func(p Point) []Point { return p.Neighbours3d() }))
-	fmt.Println("(part2)", solve(pocket, 6, func(p Point) []Point { return p.Neighbours4d() }))
+	fmt.Println("(part1)", solve(pocket, 6, func(p Point) []Point { return p.Neighbours3d() })) // 317
+	fmt.Println("(part2)", solve(pocket, 6, func(p Point) []Point { return p.Neighbours4d() })) // 1692
 }
