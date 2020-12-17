@@ -6,11 +6,13 @@ import (
 	"strings"
 )
 
+type Int = int32
+
 type Point struct {
-	X int
-	Y int
-	Z int
-	W int
+	X Int
+	Y Int
+	Z Int
+	W Int
 }
 
 func (p Point) Add(other Point) Point {
@@ -18,7 +20,7 @@ func (p Point) Add(other Point) Point {
 }
 
 func (p Point) Neighbours3d() (points []Point) {
-	delta := []int{-1, 0, 1}
+	delta := []Int{-1, 0, 1}
 	for _, dx := range delta {
 		for _, dy := range delta {
 			for _, dz := range delta {
@@ -33,7 +35,7 @@ func (p Point) Neighbours3d() (points []Point) {
 }
 
 func (p Point) Neighbours4d() (points []Point) {
-	delta := []int{-1, 0, 1}
+	delta := []Int{-1, 0, 1}
 	for _, dx := range delta {
 		for _, dy := range delta {
 			for _, dz := range delta {
@@ -59,7 +61,7 @@ func createPocket(input string) Pocket {
 	for x, line := range lines {
 		for y, c := range line {
 			if string(c) == "#" {
-				cubes[Point{x, y, 0, 0}] = true
+				cubes[Point{Int(x), Int(y), 0, 0}] = true
 			}
 		}
 	}
