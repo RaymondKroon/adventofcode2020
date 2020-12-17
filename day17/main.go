@@ -49,6 +49,18 @@ func (p Point) Neighbours4d() (points []Point) {
 	return points
 }
 
+func (p Point) ActiveDeltas(pocket Pocket, deltas []Point) int {
+	active := 0
+	for _, d := range deltas {
+		n := p.Add(d)
+		if pocket[n] {
+			active++
+		}
+	}
+
+	return active
+}
+
 type Pocket = map[Point]bool
 
 func createPocket(input string) Pocket {
@@ -85,13 +97,7 @@ func solve(pocket Pocket, cycles int, neighbours func(p Point) []Point) int {
 
 		new := Pocket{}
 		for point, _ := range pocket {
-			activeNeighbours := 0
-			for _, d := range deltas {
-				n := point.Add(d)
-				if pocket[n] {
-					activeNeighbours++
-				}
-			}
+			activeNeighbours := point.ActiveDeltas(pocket, deltas)
 
 			if pocket[point] {
 				if activeNeighbours == 2 || activeNeighbours == 3 {
