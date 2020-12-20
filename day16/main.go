@@ -72,7 +72,7 @@ func parseRules(input string) []Rule {
 func parseMyTicket(input string) []int {
 	lines := strings.Split(input, EOL)
 	nums := strings.Split(lines[1], ",")
-	result, _ := util.Atoi(nums)
+	result, _ := util.StringsAtoi(nums)
 	return result
 }
 
@@ -81,7 +81,7 @@ func parseOtherTickets(input string) [][]int {
 	result := make([][]int, len(lines)-1)
 	for i, line := range lines[1:] {
 		nums := strings.Split(line, ",")
-		resultLine, _ := util.Atoi(nums)
+		resultLine, _ := util.StringsAtoi(nums)
 		result[i] = resultLine
 	}
 

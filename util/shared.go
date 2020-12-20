@@ -18,13 +18,18 @@ func Stopwatch(what string) func() {
 	}
 }
 
-func Atoi(s []string) ([]int, error) {
+func StringsAtoi(s []string) ([]int, error) {
 	var input []int
 	for _, s := range s {
 		i, _ := strconv.Atoi(s)
 		input = append(input, i)
 	}
 	return input, nil
+}
+
+func MustStringsAtoi(s []string) []int {
+	result, _ := StringsAtoi(s)
+	return result
 }
 
 func MustAtoi(s string) int {

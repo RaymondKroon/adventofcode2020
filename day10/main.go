@@ -44,7 +44,7 @@ func Part2(input []int) int {
 func main() {
 	defer util.Stopwatch("Run")()
 	lines, _ := util.ReadInputLines("./input/day10.txt")
-	voltages, _ := util.Atoi(lines)
+	voltages, _ := util.StringsAtoi(lines)
 
 	p1 := Part1(voltages)
 	fmt.Println("(part1)", p1)

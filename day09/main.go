@@ -47,7 +47,7 @@ func SolvePart2(numbers []int, target int) int {
 func main() {
 	defer util.Stopwatch("Run")()
 	lines, _ := util.ReadInputLines("./input/day09.txt")
-	numbers, _ := util.Atoi(lines)
+	numbers, _ := util.StringsAtoi(lines)
 	p1 := SolvePart1(numbers, 25)
 	fmt.Printf("(part1) %d\n", p1)
 	p2 := SolvePart2(numbers, p1)

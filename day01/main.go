@@ -8,7 +8,7 @@ import (
 func main() {
 	defer util.Stopwatch("Run")()
 	stringInput, _ := util.ReadInputLines("./input/day01.txt")
-	input, _ := util.Atoi(stringInput)
+	input, _ := util.StringsAtoi(stringInput)
 
 	println(part1(input))
 	println(part2sorted(input))

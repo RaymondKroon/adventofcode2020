@@ -4,6 +4,8 @@
 
 package util
 
+import "fmt"
+
 func StringInSlice(a string, list []string) bool {
 	for _, b := range list {
 		if b == a {
@@ -13,6 +15,19 @@ func StringInSlice(a string, list []string) bool {
 	return false
 }
 
+func MapStringsToStrings(a []string) []string {
+	result := make([]string, len(a))
+	for i := 0; i < len(a); i++ {
+		result[i] = fmt.Sprint(a[i])
+	}
+
+	return result
+}
+
+func RemoveFromStringSlice(slice []string, idx int) []string {
+	return append(slice[:idx], slice[idx+1:]...)
+}
+
 func IntInSlice(a int, list []int) bool {
 	for _, b := range list {
 		if b == a {
@@ -20,4 +35,20 @@ func IntInSlice(a int, list []int) bool {
 		}
 	}
 	return false
+}
+
+func MapIntsToStrings(a []int) []string {
+	result := make([]string, len(a))
+	for i := 0; i < len(a); i++ {
+		result[i] = fmt.Sprint(a[i])
+	}
+
+	return result
+}
+
+func RemoveFromIntSlice(slice []int, idx int) []int {
+	if idx+1 > len(slice) {
+		return slice
+	}
+	return append(slice[:idx], slice[idx+1:]...)
 }

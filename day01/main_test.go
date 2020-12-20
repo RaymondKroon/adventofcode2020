@@ -16,7 +16,7 @@ func Benchmark(b *testing.B) {
 	}
 
 	stringInput, _ := util.ReadInputLines("../input/day01.txt")
-	input, _ := util.Atoi(stringInput)
+	input, _ := util.StringsAtoi(stringInput)
 
 	for _, bm := range benchmarks {
 		b.Run(bm.name, func(b *testing.B) {
