@@ -6,16 +6,16 @@ package util
 
 import "fmt"
 
-func StringInSlice(a string, list []string) bool {
+func StringInSlice(a String, list []String) bool {
 	for _, b := range list {
-		if b == a {
+		if b.Equals(a) {
 			return true
 		}
 	}
 	return false
 }
 
-func MapStringsToStrings(a []string) []string {
+func MapStringsToStrings(a []String) []string {
 	result := make([]string, len(a))
 	for i := 0; i < len(a); i++ {
 		result[i] = fmt.Sprint(a[i])
@@ -24,12 +24,12 @@ func MapStringsToStrings(a []string) []string {
 	return result
 }
 
-func RemoveFromStringSlice(slice []string, idx int) []string {
+func RemoveFromStringSlice(slice []String, idx int) []String {
 	return append(slice[:idx:idx], slice[idx+1:]...)
 }
 
-func CloneStringSlice(slice []string) []string {
-	cloned := make([]string, len(slice))
+func CloneStringSlice(slice []String) []String {
+	cloned := make([]String, len(slice))
 	for i := 0; i < len(slice); i++ {
 		cloned[i] = slice[i]
 	}
@@ -37,16 +37,16 @@ func CloneStringSlice(slice []string) []string {
 	return cloned
 }
 
-func IntInSlice(a int, list []int) bool {
+func IntInSlice(a Int, list []Int) bool {
 	for _, b := range list {
-		if b == a {
+		if b.Equals(a) {
 			return true
 		}
 	}
 	return false
 }
 
-func MapIntsToStrings(a []int) []string {
+func MapIntsToStrings(a []Int) []string {
 	result := make([]string, len(a))
 	for i := 0; i < len(a); i++ {
 		result[i] = fmt.Sprint(a[i])
@@ -55,12 +55,12 @@ func MapIntsToStrings(a []int) []string {
 	return result
 }
 
-func RemoveFromIntSlice(slice []int, idx int) []int {
+func RemoveFromIntSlice(slice []Int, idx int) []Int {
 	return append(slice[:idx:idx], slice[idx+1:]...)
 }
 
-func CloneIntSlice(slice []int) []int {
-	cloned := make([]int, len(slice))
+func CloneIntSlice(slice []Int) []Int {
+	cloned := make([]Int, len(slice))
 	for i := 0; i < len(slice); i++ {
 		cloned[i] = slice[i]
 	}

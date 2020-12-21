@@ -2,6 +2,7 @@ package main
 
 import (
 	"adventofcode2020/util"
+	"bytes"
 	"fmt"
 	"math"
 	"regexp"
@@ -9,7 +10,7 @@ import (
 )
 
 ////go:generate genny -in=../util/queue.go -out=gen-$GOFILE -pkg=main gen "ValueType=Coord"
-//go:generate genny -in=../util/slice.go -out=gen-slice-$GOFILE -pkg=main gen "ValueType=Coord,Tile"
+//go:generate genny -in=../util/slice.go -out=gen-slice-$GOFILE -pkg=main gen "SliceType=Coord,Tile"
 
 var (
 	idRegex    = regexp.MustCompile(`\d+`)
@@ -25,36 +26,72 @@ const (
 	Left
 )
 
-const XSize = 10
-const YSize = 10
-
-type PixelsType = [XSize][YSize]rune
+type PixelsType = [][]rune
 
 type Tile struct {
-	Id     int
-	pixels PixelsType
+	Id       int
+	pixels   PixelsType
+	sideSize int
+}
+
+func (t *Tile) String() string {
+	var buf bytes.Buffer
+	first := true
+	for _, line := range t.pixels {
+		if !first {
+			buf.Write([]byte("\n"))
+		}
+		for _, c := range line {
+			buf.Write([]byte(string(c)))
+		}
+		first = false
+	}
+
+	return buf.String()
+}
+
+func (t Tile) Equals(o Tile) bool {
+	if t.sideSize != o.sideSize {
+		return false
+	}
+	for y := 0; y < t.sideSize; y++ {
+		for x := 0; x < t.sideSize; x++ {
+			if t.pixels[y][x] != o.pixels[y][x] {
+				return false
+			}
+		}
+	}
+
+	return true
 }
 
 func (t *Tile) RotateCW() *Tile {
-	var rotated = PixelsType{}
-	for y := 0; y < YSize; y++ {
-		for x := 0; x < XSize; x++ {
-			rotated[x][YSize-y-1] = t.pixels[y][x]
+	rotated := make([][]rune, t.sideSize)
+	for y := 0; y < t.sideSize; y++ {
+		rotated[y] = make([]rune, t.sideSize)
+	}
+
+	for y := range t.pixels {
+		for x := range t.pixels[y] {
+			rotated[x][t.sideSize-y-1] = t.pixels[y][x]
 		}
 	}
 
-	return &Tile{pixels: rotated, Id: t.Id}
+	return &Tile{pixels: rotated, Id: t.Id, sideSize: t.sideSize}
 }
 
 func (t *Tile) FlipH() *Tile {
-	var flipped = PixelsType{}
-	for y := 0; y < YSize; y++ {
-		for x := 0; x < XSize; x++ {
-			flipped[y][XSize-x-1] = t.pixels[y][x]
+	flipped := make([][]rune, t.sideSize)
+	for y := 0; y < t.sideSize; y++ {
+		flipped[y] = make([]rune, t.sideSize)
+	}
+	for y := range t.pixels {
+		for x := range t.pixels[y] {
+			flipped[y][t.sideSize-x-1] = t.pixels[y][x]
 		}
 	}
 
-	return &Tile{pixels: flipped, Id: t.Id}
+	return &Tile{pixels: flipped, Id: t.Id, sideSize: t.sideSize}
 }
 
 func (t *Tile) GetAllPositions() []Tile {
@@ -67,9 +104,12 @@ func (t *Tile) GetAllPositions() []Tile {
 		} else {
 			p = t
 		}
+
 		for r := 0; r < 4; r++ {
 			positions[r+f*4] = *p
-			p = p.RotateCW()
+			if r != 3 {
+				p = p.RotateCW()
+			}
 		}
 	}
 
@@ -77,12 +117,26 @@ func (t *Tile) GetAllPositions() []Tile {
 }
 
 func (t *Tile) IsTopNeighbour(o *Tile) bool {
-	return t.pixels[0] == o.pixels[YSize-1]
+	if t.sideSize != o.sideSize {
+		return false
+	}
+
+	for x := 0; x < t.sideSize; x++ {
+		if t.pixels[0][x] != o.pixels[t.sideSize-1][x] {
+			return false
+		}
+	}
+
+	return true
 }
 
 func (t *Tile) IsRightNeighbour(o *Tile) bool {
-	for y := 0; y < YSize; y++ {
-		if t.pixels[y][XSize-1] != o.pixels[y][0] {
+	if t.sideSize != o.sideSize {
+		return false
+	}
+
+	for y := 0; y < t.sideSize; y++ {
+		if t.pixels[y][t.sideSize-1] != o.pixels[y][0] {
 			return false
 		}
 	}
@@ -99,11 +153,16 @@ func (t *Tile) IsLeftNeighbour(o *Tile) bool {
 }
 
 func ParseTile(lines []string) (tile Tile) {
+	pixels := make([][]rune, len(lines))
 	for y, line := range lines {
+		pixels[y] = make([]rune, len(line))
 		for x, c := range line {
-			tile.pixels[y][x] = c
+			pixels[y][x] = c
 		}
 	}
+
+	tile.pixels = pixels
+	tile.sideSize = len(lines)
 
 	return
 }
@@ -130,6 +189,10 @@ func loadTiles(input string) (tiles []Tile) {
 type Coord struct {
 	row int
 	col int
+}
+
+func (c Coord) Equals(o Coord) bool {
+	return c.col == o.col && c.row == o.row
 }
 
 func (c *Coord) AddValue(other Coord) Coord {
@@ -202,7 +265,7 @@ func solve(tiles []Tile, coords []Coord, partialImage map[Coord]Tile, targetSize
 	return false, nil
 }
 
-func part1(tiles *[]Tile) int {
+func SolveImage(tiles *[]Tile) (map[Coord]Tile, int) {
 	side := int(math.Sqrt(float64(len(*tiles))))
 	if side*side != len(*tiles) {
 		panic("NOT SQUARE")
@@ -215,15 +278,100 @@ func part1(tiles *[]Tile) int {
 		}
 	}
 
-	ok, image := solve(*tiles, coords, map[Coord]Tile{}, len(*tiles))
-	if ok {
-		return image[Coord{0, 0}].Id *
-			image[Coord{0, side - 1}].Id *
-			image[Coord{side - 1, 0}].Id *
-			image[Coord{side - 1, side - 1}].Id
-	} else {
-		return -1
+	_, image := solve(*tiles, coords, map[Coord]Tile{}, len(*tiles))
+	return image, side
+}
+
+func part1(image map[Coord]Tile, side int) int {
+
+	return image[Coord{0, 0}].Id *
+		image[Coord{0, side - 1}].Id *
+		image[Coord{side - 1, 0}].Id *
+		image[Coord{side - 1, side - 1}].Id
+}
+
+func part2(image map[Coord]Tile, side int) int {
+	sideSize := side * 10
+	completePixels := make([][]rune, sideSize)
+	for y := 0; y < sideSize; y++ {
+		completePixels[y] = make([]rune, sideSize)
 	}
+
+	for row := 0; row < side; row++ {
+		for col := 0; col < side; col++ {
+			tile := image[Coord{row, col}]
+			fmt.Println(tile.String())
+			fmt.Println("-----")
+			for y := 0; y < 10; y++ {
+				for x := 0; x < 10; x++ {
+					completePixels[y+row*10][x+col*10] = tile.pixels[y][x]
+				}
+			}
+		}
+	}
+
+	complete := Tile{
+		Id:       0,
+		pixels:   completePixels,
+		sideSize: sideSize,
+	}
+
+	fmt.Println(complete.String())
+
+	monster :=
+		`                  # 
+#    ##    ##    ###
+ #  #  #  #  #  #`
+
+	monsterCoords := map[Coord]struct{}{}
+	for row, line := range strings.Split(monster, "\n") {
+		for col, c := range line {
+			if c == '#' {
+				monsterCoords[Coord{row, col}] = struct{}{}
+			}
+		}
+	}
+
+	for _, p := range complete.GetAllPositions() {
+
+		var found bool
+
+		for row := range p.pixels {
+			for col := range p.pixels[row] {
+				coord := Coord{row, col}
+				found = true
+				for mCoord := range monsterCoords {
+					checkCoord := coord.AddValue(mCoord)
+					if checkCoord.row >= complete.sideSize || checkCoord.col >= complete.sideSize || p.pixels[checkCoord.row][checkCoord.col] != '#' {
+						found = false
+						break
+					}
+				}
+
+				if found {
+					for mCoord := range monsterCoords {
+						checkCoord := coord.AddValue(mCoord)
+						p.pixels[checkCoord.row][checkCoord.col] = 'O'
+					}
+
+					total := 0
+					for y := range p.pixels {
+						for x := range p.pixels[y] {
+							if p.pixels[y][x] == '#' {
+								total += 1
+							}
+						}
+					}
+
+					return total
+
+				}
+			}
+		}
+
+	}
+
+	return -1
 }
 
 func main() {
@@ -231,7 +379,9 @@ func main() {
 	input, _ := util.ReadInput("./input/day20.txt")
 
 	tiles := loadTiles(input)
+	image, side := SolveImage(&tiles)
 
-	fmt.Println("(p1)", part1(&tiles))
+	fmt.Println("(p1)", part1(image, side)) //7492183537913
+	fmt.Println("(p2)", part2(image, side)) //
 
 }

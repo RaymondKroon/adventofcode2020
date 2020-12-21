@@ -2,19 +2,19 @@ package util
 
 import "fmt"
 
-//go:generate genny -in=$GOFILE -out=gen-$GOFILE gen "ValueType=string,int"
+//go:generate genny -in=$GOFILE -out=gen-$GOFILE gen "SliceType=String,Int"
 //type ValueType = generic.Type
 
-func ValueTypeInSlice(a ValueType, list []ValueType) bool {
+func SliceTypeInSlice(a SliceType, list []SliceType) bool {
 	for _, b := range list {
-		if b == a {
+		if b.Equals(a) {
 			return true
 		}
 	}
 	return false
 }
 
-func MapValueTypesToStrings(a []ValueType) []string {
+func MapSliceTypesToStrings(a []SliceType) []string {
 	result := make([]string, len(a))
 	for i := 0; i < len(a); i++ {
 		result[i] = fmt.Sprint(a[i])
@@ -23,12 +23,12 @@ func MapValueTypesToStrings(a []ValueType) []string {
 	return result
 }
 
-func RemoveFromValueTypeSlice(slice []ValueType, idx int) []ValueType {
+func RemoveFromSliceTypeSlice(slice []SliceType, idx int) []SliceType {
 	return append(slice[:idx:idx], slice[idx+1:]...)
 }
 
-func CloneValueTypeSlice(slice []ValueType) []ValueType {
-	cloned := make([]ValueType, len(slice))
+func CloneSliceTypeSlice(slice []SliceType) []SliceType {
+	cloned := make([]SliceType, len(slice))
 	for i := 0; i < len(slice); i++ {
 		cloned[i] = slice[i]
 	}

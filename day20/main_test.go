@@ -62,21 +62,18 @@ var (
 
 func TestTile_Rotate(t1 *testing.T) {
 	type fields struct {
-		pixels PixelsType
+		tile Tile
 	}
 	tests := []struct {
 		name   string
 		fields fields
 		want   *Tile
 	}{
-		{name: "rotate right", fields: fields{pixels: original.pixels}, want: &rotated},
+		{name: "rotate right", fields: fields{tile: original}, want: &rotated},
 	}
 	for _, tt := range tests {
 		t1.Run(tt.name, func(t1 *testing.T) {
-			t := &Tile{
-				pixels: tt.fields.pixels,
-			}
-			if got := t.RotateCW(); !reflect.DeepEqual(got, tt.want) {
+			if got := tt.fields.tile.RotateCW(); !reflect.DeepEqual(got, tt.want) {
 				t1.Errorf("RotateCW() = %v, want %v", got, tt.want)
 			}
 		})
@@ -85,21 +82,18 @@ func TestTile_Rotate(t1 *testing.T) {
 
 func TestTile_Flip(t1 *testing.T) {
 	type fields struct {
-		pixels PixelsType
+		tile Tile
 	}
 	tests := []struct {
 		name   string
 		fields fields
 		want   *Tile
 	}{
-		{name: "flip Horizontal", fields: fields{pixels: original.pixels}, want: &flipped},
+		{name: "flip Horizontal", fields: fields{tile: original}, want: &flipped},
 	}
 	for _, tt := range tests {
 		t1.Run(tt.name, func(t1 *testing.T) {
-			t := &Tile{
-				pixels: tt.fields.pixels,
-			}
-			if got := t.FlipH(); !reflect.DeepEqual(got, tt.want) {
+			if got := tt.fields.tile.FlipH(); !reflect.DeepEqual(got, tt.want) {
 				t1.Errorf("FlipH() = %v, want %v", got, tt.want)
 			}
 		})
@@ -119,9 +113,11 @@ func TestTile_GetAllPositions(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t1 *testing.T) {
 			positions := original.GetAllPositions()
-			unique := make(map[PixelsType]bool)
+			unique := make([]Tile, 0)
 			for _, p := range positions {
-				unique[p.pixels] = true
+				if !TileInSlice(p, unique) {
+					unique = append(unique, p)
+				}
 			}
 
 			if len(unique) != 8 {

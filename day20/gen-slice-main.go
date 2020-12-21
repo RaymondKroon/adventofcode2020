@@ -8,7 +8,7 @@ import "fmt"
 
 func CoordInSlice(a Coord, list []Coord) bool {
 	for _, b := range list {
-		if b == a {
+		if b.Equals(a) {
 			return true
 		}
 	}
@@ -39,7 +39,7 @@ func CloneCoordSlice(slice []Coord) []Coord {
 
 func TileInSlice(a Tile, list []Tile) bool {
 	for _, b := range list {
-		if b == a {
+		if b.Equals(a) {
 			return true
 		}
 	}
