@@ -2,6 +2,7 @@ package util
 
 import (
 	"bufio"
+	"bytes"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -44,10 +45,10 @@ func ReadInput(filePath string) (string, error) {
 		log.Fatal(err)
 	}
 
-	return string(content), nil
+	return string(bytes.ReplaceAll(content, []byte("\r"), []byte(""))), nil
 }
 
-func CreateSubstringSplitter(substr string) bufio.SplitFunc {
+func CreateSubstringSplitter(substrings []string) bufio.SplitFunc {
 	splitter := func(data []byte, atEOF bool) (advance int, token []byte, err error) {
 
 		// Return nothing if at end of file and no data passed
@@ -55,8 +56,10 @@ func CreateSubstringSplitter(substr string) bufio.SplitFunc {
 			return 0, nil, nil
 		}
 
-		if i := strings.Index(string(data), substr); i >= 0 {
-			return i + len(substr), data[0:i], nil
+		for _, substr := range substrings {
+			if i := strings.Index(string(data), substr); i >= 0 {
+				return i + len(substr), data[0:i], nil
+			}
 		}
 
 		// If at end of file with data return the data
@@ -70,7 +73,8 @@ func CreateSubstringSplitter(substr string) bufio.SplitFunc {
 	return splitter
 }
 
-func ReadSplittedInput(filePath string, splitOn string) ([]string, error) {
+// Deprecated: Does not work wel with \r?\n
+func ReadSplittedInput(filePath string, splitOn ...string) ([]string, error) {
 	file, err := os.Open(filePath)
 	defer file.Close()
 

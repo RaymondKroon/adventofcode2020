@@ -8,8 +8,6 @@ import (
 	"strings"
 )
 
-const EOL = "\r\n"
-
 // go generate day16/main.go
 //go:generate genny -in=../util/set.go -out=gen-$GOFILE -pkg=main gen "ValueType=Range"
 
@@ -70,14 +68,14 @@ func parseRules(input string) []Rule {
 }
 
 func parseMyTicket(input string) []int {
-	lines := strings.Split(input, EOL)
+	lines := strings.Split(input, "\n")
 	nums := strings.Split(lines[1], ",")
 	result, _ := util.StringsAtoi(nums)
 	return result
 }
 
 func parseOtherTickets(input string) [][]int {
-	lines := strings.Split(input, EOL)
+	lines := strings.Split(input, "\n")
 	result := make([][]int, len(lines)-1)
 	for i, line := range lines[1:] {
 		nums := strings.Split(line, ",")
@@ -175,10 +173,11 @@ func Part2IdentifyValues(myTicket []int, otherTickets [][]int, rules []Rule) int
 
 func main() {
 	defer util.Stopwatch("Run")()
-	input, _ := util.ReadSplittedInput("./input/day16.txt", EOL+EOL)
-	rules := parseRules(input[0])
-	myTicket := parseMyTicket(input[1])
-	otherTickets := parseOtherTickets(input[2])
+	input, _ := util.ReadInput("./input/day16.txt")
+	parts := strings.Split(input, "\n\n")
+	rules := parseRules(parts[0])
+	myTicket := parseMyTicket(parts[1])
+	otherTickets := parseOtherTickets(parts[2])
 
 	fmt.Println("(part1)", Part1CheckErrorRate(otherTickets, rules))
 	fmt.Println("(part2)", Part2IdentifyValues(myTicket, otherTickets, rules))

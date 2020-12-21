@@ -9,6 +9,7 @@ import (
 
 type Rule interface {
 	String() string
+	IsMatch(message string) (matched bool, lengths []int)
 }
 
 type Literal struct {
@@ -17,6 +18,7 @@ type Literal struct {
 
 type Sequence struct {
 	sequence []int
+	rules    *map[int]Rule
 }
 
 type Choice struct {
@@ -28,11 +30,45 @@ func (l *Literal) String() string {
 	return fmt.Sprintf("\"%s\"", l.char)
 }
 
+func (l *Literal) IsMatch(message string) (matched bool, lenght []int) {
+	if len(message) == 0 {
+		return false, nil
+	}
+	if l.char == string(message[0]) {
+		return true, []int{1}
+	} else {
+		return false, nil
+	}
+}
+
 func (s *Sequence) String() string {
 	return strings.Join(util.MapIntsToStrings(s.sequence), " ")
 }
 
-func NewSequenceFromString(s string) *Sequence {
+func (s *Sequence) IsMatch(message string) (matched bool, lenght []int) {
+	indexes := []int{0}
+	for _, id := range s.sequence {
+		var newIndexes []int
+		for _, idx := range indexes {
+			match, lengths := (*s.rules)[id].IsMatch(message[idx:])
+			if match {
+				for _, l := range lengths {
+					newIndexes = append(newIndexes, idx+l)
+				}
+			}
+		}
+
+		indexes = newIndexes
+	}
+
+	if len(indexes) > 0 {
+		return true, indexes
+	} else {
+		return false, nil
+	}
+}
+
+func NewSequenceFromString(s string, rules *map[int]Rule) *Sequence {
 	splitted := strings.Fields(s)
 	seq := make([]int, len(splitted))
 
@@ -40,11 +76,26 @@ func NewSequenceFromString(s string) *Sequence {
 		seq[i] = util.MustAtoi(m)
 	}
 
-	return &Sequence{sequence: seq}
+	return &Sequence{sequence: seq, rules: rules}
 }
 
 func (c *Choice) String() string {
 	return fmt.Sprintf("%s | %s", c.left.String(), c.right.String())
+}
+
+func (c *Choice) IsMatch(message string) (matched bool, length []int) {
+	matches := make([]int, 0)
+	if match, indexes := c.left.IsMatch(message); match {
+		matches = append(matches, indexes...)
+	}
+	if match, indexes := c.right.IsMatch(message); match {
+		matches = append(matches, indexes...)
+	}
+	if len(matches) > 0 {
+		return true, matches
+	} else {
+		return false, nil
+	}
 }
 
 var (
@@ -64,9 +115,9 @@ func parseInput(input string) (rules map[int]Rule, messages []string) {
 			rules[id] = &Literal{char: m[1]}
 		} else if strings.Contains(parts[1], "|") {
 			leftRight := strings.Split(parts[1], " | ")
-			rules[id] = &Choice{left: *NewSequenceFromString(leftRight[0]), right: *NewSequenceFromString(leftRight[1])}
+			rules[id] = &Choice{left: *NewSequenceFromString(leftRight[0], &rules), right: *NewSequenceFromString(leftRight[1], &rules)}
 		} else {
-			rules[id] = NewSequenceFromString(parts[1])
+			rules[id] = NewSequenceFromString(parts[1], &rules)
 		}
 	}
 
@@ -74,67 +125,10 @@ func parseInput(input string) (rules map[int]Rule, messages []string) {
 	return rules, messages
 }
 
-func isSequenceMatch(rules *map[int]Rule, message string, rule Sequence) (bool, []int) {
-	indexes := []int{0}
-	for _, id := range rule.sequence {
-		var newIndexes []int
-		for _, idx := range indexes {
-			match, lengths := isMatch(rules, message[idx:], id)
-			if match {
-				for _, l := range lengths {
-					newIndexes = append(newIndexes, idx+l)
-				}
-			}
-		}
-
-		indexes = newIndexes
-	}
-
-	if len(indexes) > 0 {
-		return true, indexes
-	} else {
-		return false, nil
-	}
-}
-
-func isMatch(rules *map[int]Rule, message string, ruleId int) (matched bool, lengths []int) {
-	if len(message) == 0 {
-		return false, nil
-	}
-
-	rule := (*rules)[ruleId]
-	switch rule.(type) {
-	case *Literal:
-		if rule.(*Literal).char == string(message[0]) {
-			return true, []int{1}
-		} else {
-			return false, nil
-		}
-	case *Sequence:
-		return isSequenceMatch(rules, message, *rule.(*Sequence))
-	case *Choice:
-		c := rule.(*Choice)
-		matches := make([]int, 0)
-		if match, indexes := isSequenceMatch(rules, message, c.left); match {
-			matches = append(matches, indexes...)
-		}
-		if match, indexes := isSequenceMatch(rules, message, c.right); match {
-			matches = append(matches, indexes...)
-		}
-		if len(matches) > 0 {
-			return true, matches
-		} else {
-			return false, nil
-		}
-	}
-
-	return false, nil
-}
-
 func Part1(rules map[int]Rule, messages []string) int {
 	valid := 0
 	for _, message := range messages {
-		if match, lengths := isMatch(&rules, message, 0); match && util.IntInSlice(len(message), lengths) {
+		if match, lengths := rules[0].IsMatch(message); match && util.IntInSlice(len(message), lengths) {
 			valid++
 		}
 	}
@@ -143,17 +137,17 @@ func Part1(rules map[int]Rule, messages []string) int {
 
 func Part2(rules map[int]Rule, messages []string) int {
 	rules[8] = &Choice{
-		left:  Sequence{sequence: []int{42}},
-		right: Sequence{sequence: []int{42, 8}},
+		left:  Sequence{sequence: []int{42}, rules: &rules},
+		right: Sequence{sequence: []int{42, 8}, rules: &rules},
 	}
 	rules[11] = &Choice{
-		left:  Sequence{sequence: []int{42, 31}},
-		right: Sequence{sequence: []int{42, 11, 31}},
+		left:  Sequence{sequence: []int{42, 31}, rules: &rules},
+		right: Sequence{sequence: []int{42, 11, 31}, rules: &rules},
 	}
 
 	valid := 0
 	for _, message := range messages {
-		match, lengths := isMatch(&rules, message, 0)
+		match, lengths := rules[0].IsMatch(message)
 		if match && util.IntInSlice(len(message), lengths) {
 			valid++
 		}
