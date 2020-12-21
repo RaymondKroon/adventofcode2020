@@ -2,11 +2,11 @@
 // Any changes will be lost if this file is regenerated.
 // see https://github.com/cheekybits/genny
 
-package util
+package main
 
 import "fmt"
 
-func StringInSlice(a string, list []string) bool {
+func CoordInSlice(a Coord, list []Coord) bool {
 	for _, b := range list {
 		if b == a {
 			return true
@@ -15,7 +15,7 @@ func StringInSlice(a string, list []string) bool {
 	return false
 }
 
-func MapStringsToStrings(a []string) []string {
+func MapCoordsToStrings(a []Coord) []string {
 	result := make([]string, len(a))
 	for i := 0; i < len(a); i++ {
 		result[i] = fmt.Sprint(a[i])
@@ -24,12 +24,12 @@ func MapStringsToStrings(a []string) []string {
 	return result
 }
 
-func RemoveFromStringSlice(slice []string, idx int) []string {
+func RemoveFromCoordSlice(slice []Coord, idx int) []Coord {
 	return append(slice[:idx:idx], slice[idx+1:]...)
 }
 
-func CloneStringSlice(slice []string) []string {
-	cloned := make([]string, len(slice))
+func CloneCoordSlice(slice []Coord) []Coord {
+	cloned := make([]Coord, len(slice))
 	for i := 0; i < len(slice); i++ {
 		cloned[i] = slice[i]
 	}
@@ -37,7 +37,7 @@ func CloneStringSlice(slice []string) []string {
 	return cloned
 }
 
-func IntInSlice(a int, list []int) bool {
+func TileInSlice(a Tile, list []Tile) bool {
 	for _, b := range list {
 		if b == a {
 			return true
@@ -46,7 +46,7 @@ func IntInSlice(a int, list []int) bool {
 	return false
 }
 
-func MapIntsToStrings(a []int) []string {
+func MapTilesToStrings(a []Tile) []string {
 	result := make([]string, len(a))
 	for i := 0; i < len(a); i++ {
 		result[i] = fmt.Sprint(a[i])
@@ -55,12 +55,12 @@ func MapIntsToStrings(a []int) []string {
 	return result
 }
 
-func RemoveFromIntSlice(slice []int, idx int) []int {
+func RemoveFromTileSlice(slice []Tile, idx int) []Tile {
 	return append(slice[:idx:idx], slice[idx+1:]...)
 }
 
-func CloneIntSlice(slice []int) []int {
-	cloned := make([]int, len(slice))
+func CloneTileSlice(slice []Tile) []Tile {
+	cloned := make([]Tile, len(slice))
 	for i := 0; i < len(slice); i++ {
 		cloned[i] = slice[i]
 	}

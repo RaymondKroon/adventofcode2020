@@ -24,5 +24,14 @@ func MapValueTypesToStrings(a []ValueType) []string {
 }
 
 func RemoveFromValueTypeSlice(slice []ValueType, idx int) []ValueType {
-	return append(slice[:idx], slice[idx+1:]...)
+	return append(slice[:idx:idx], slice[idx+1:]...)
+}
+
+func CloneValueTypeSlice(slice []ValueType) []ValueType {
+	cloned := make([]ValueType, len(slice))
+	for i := 0; i < len(slice); i++ {
+		cloned[i] = slice[i]
+	}
+
+	return cloned
 }
