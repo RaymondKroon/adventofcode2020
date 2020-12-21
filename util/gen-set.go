@@ -5,11 +5,28 @@
 package util
 
 type StringSet struct {
-	inner map[string]bool
+	inner map[string]struct{}
 }
 
 func NewStringSet() StringSet {
-	return StringSet{inner: make(map[string]bool, 50)}
+	return StringSet{inner: make(map[string]struct{}, 50)}
+}
+
+func NewStringSetFromSlice(values []string) StringSet {
+	result := StringSet{inner: make(map[string]struct{}, 50)}
+	for _, v := range values {
+		result.Add(v)
+	}
+	return result
+}
+
+func (fr *StringSet) Clone() StringSet {
+	cloned := make(map[string]struct{}, len(fr.inner))
+	for k, v := range fr.inner {
+		cloned[k] = v
+	}
+
+	return StringSet{inner: cloned}
 }
 
 func (fr *StringSet) First() string {
@@ -20,24 +37,68 @@ func (fr *StringSet) First() string {
 	panic("Empty FieldRange")
 }
 
+func (fr *StringSet) Values() []string {
+	values := make([]string, len(fr.inner))
+	i := 0
+	for val := range fr.inner {
+		values[i] = val
+		i += 1
+	}
+
+	return values
+}
+
 func (fr *StringSet) Len() int {
 	return len(fr.inner)
 }
 
 func (fr *StringSet) Add(field string) {
-	fr.inner[field] = true
+	fr.inner[field] = struct{}{}
 }
 
 func (fr *StringSet) Remove(field string) {
 	delete(fr.inner, field)
 }
 
+func (fr *StringSet) Contains(field string) bool {
+	_, ok := fr.inner[field]
+	return ok
+}
+
+func (fr *StringSet) Intersect(o StringSet) StringSet {
+	result := NewStringSet()
+	for val := range fr.inner {
+		if o.Contains(val) {
+			result.Add(val)
+		}
+	}
+
+	return result
+}
+
 type IntSet struct {
-	inner map[int]bool
+	inner map[int]struct{}
 }
 
 func NewIntSet() IntSet {
-	return IntSet{inner: make(map[int]bool, 50)}
+	return IntSet{inner: make(map[int]struct{}, 50)}
+}
+
+func NewIntSetFromSlice(values []int) IntSet {
+	result := IntSet{inner: make(map[int]struct{}, 50)}
+	for _, v := range values {
+		result.Add(v)
+	}
+	return result
+}
+
+func (fr *IntSet) Clone() IntSet {
+	cloned := make(map[int]struct{}, len(fr.inner))
+	for k, v := range fr.inner {
+		cloned[k] = v
+	}
+
+	return IntSet{inner: cloned}
 }
 
 func (fr *IntSet) First() int {
@@ -48,14 +109,41 @@ func (fr *IntSet) First() int {
 	panic("Empty FieldRange")
 }
 
+func (fr *IntSet) Values() []int {
+	values := make([]int, len(fr.inner))
+	i := 0
+	for val := range fr.inner {
+		values[i] = val
+		i += 1
+	}
+
+	return values
+}
+
 func (fr *IntSet) Len() int {
 	return len(fr.inner)
 }
 
 func (fr *IntSet) Add(field int) {
-	fr.inner[field] = true
+	fr.inner[field] = struct{}{}
 }
 
 func (fr *IntSet) Remove(field int) {
 	delete(fr.inner, field)
+}
+
+func (fr *IntSet) Contains(field int) bool {
+	_, ok := fr.inner[field]
+	return ok
+}
+
+func (fr *IntSet) Intersect(o IntSet) IntSet {
+	result := NewIntSet()
+	for val := range fr.inner {
+		if o.Contains(val) {
+			result.Add(val)
+		}
+	}
+
+	return result
 }
