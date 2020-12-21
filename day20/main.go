@@ -37,12 +37,13 @@ type Tile struct {
 func (t *Tile) String() string {
 	var buf bytes.Buffer
 	first := true
+	buf.WriteString(fmt.Sprintf("Tile %d:\n", t.Id))
 	for _, line := range t.pixels {
 		if !first {
-			buf.Write([]byte("\n"))
+			buf.WriteString("\n")
 		}
 		for _, c := range line {
-			buf.Write([]byte(string(c)))
+			buf.WriteString(string(c))
 		}
 		first = false
 	}
@@ -227,7 +228,7 @@ func solve(tiles []Tile, coords []Coord, partialImage map[Coord]Tile, targetSize
 		//for _, permutatedTile := range []Tile{tile} {
 		for _, permutatedTile := range tile.GetAllPositions() {
 			// top
-			if nbTile, exists := partialImage[coord.AddValue(Coord{1, 0})]; exists {
+			if nbTile, exists := partialImage[coord.AddValue(Coord{-1, 0})]; exists {
 				if !permutatedTile.IsTopNeighbour(&nbTile) {
 					continue
 				}
@@ -240,7 +241,7 @@ func solve(tiles []Tile, coords []Coord, partialImage map[Coord]Tile, targetSize
 			}
 
 			// bottom
-			if nbTile, exists := partialImage[coord.AddValue(Coord{-1, 0})]; exists {
+			if nbTile, exists := partialImage[coord.AddValue(Coord{+1, 0})]; exists {
 				if !permutatedTile.IsBottomNeighbour(&nbTile) {
 					continue
 				}
@@ -284,6 +285,14 @@ func SolveImage(tiles *[]Tile) (map[Coord]Tile, int) {
 
 func part1(image map[Coord]Tile, side int) int {
 
+	//for row := 0; row < side; row++ {
+	//	for col := 0; col < side; col++ {
+	//		tile := image[Coord{row, col}]
+	//		fmt.Println(tile.String())
+	//		fmt.Println("-----")
+	//	}
+	//}
+
 	return image[Coord{0, 0}].Id *
 		image[Coord{0, side - 1}].Id *
 		image[Coord{side - 1, 0}].Id *
@@ -291,7 +300,7 @@ func part1(image map[Coord]Tile, side int) int {
 }
 
 func part2(image map[Coord]Tile, side int) int {
-	sideSize := side * 10
+	sideSize := side * 8
 	completePixels := make([][]rune, sideSize)
 	for y := 0; y < sideSize; y++ {
 		completePixels[y] = make([]rune, sideSize)
@@ -300,11 +309,9 @@ func part2(image map[Coord]Tile, side int) int {
 	for row := 0; row < side; row++ {
 		for col := 0; col < side; col++ {
 			tile := image[Coord{row, col}]
-			fmt.Println(tile.String())
-			fmt.Println("-----")
-			for y := 0; y < 10; y++ {
-				for x := 0; x < 10; x++ {
-					completePixels[y+row*10][x+col*10] = tile.pixels[y][x]
+			for y := 0; y < 8; y++ {
+				for x := 0; x < 8; x++ {
+					completePixels[y+row*8][x+col*8] = tile.pixels[y+1][x+1]
 				}
 			}
 		}
@@ -315,8 +322,6 @@ func part2(image map[Coord]Tile, side int) int {
 		pixels:   completePixels,
 		sideSize: sideSize,
 	}
-
-	fmt.Println(complete.String())
 
 	monster :=
 		`                  # 
@@ -334,39 +339,44 @@ func part2(image map[Coord]Tile, side int) int {
 
 	for _, p := range complete.GetAllPositions() {
 
-		var found bool
+		found := false
 
 		for row := range p.pixels {
 			for col := range p.pixels[row] {
 				coord := Coord{row, col}
-				found = true
+				match := true
 				for mCoord := range monsterCoords {
 					checkCoord := coord.AddValue(mCoord)
 					if checkCoord.row >= complete.sideSize || checkCoord.col >= complete.sideSize || p.pixels[checkCoord.row][checkCoord.col] != '#' {
-						found = false
+						match = false
 						break
 					}
 				}
 
-				if found {
+				if match {
+					found = true
 					for mCoord := range monsterCoords {
 						checkCoord := coord.AddValue(mCoord)
 						p.pixels[checkCoord.row][checkCoord.col] = 'O'
 					}
 
-					total := 0
-					for y := range p.pixels {
-						for x := range p.pixels[y] {
-							if p.pixels[y][x] == '#' {
-								total += 1
-							}
-						}
-					}
-
-					return total
-
 				}
 			}
+		}
+
+		if found {
+			total := 0
+			for y := range p.pixels {
+				for x := range p.pixels[y] {
+					if p.pixels[y][x] == '#' {
+						total += 1
+					}
+				}
+			}
+
+			fmt.Println(p.String())
+
+			return total
 		}
 
 	}
@@ -382,6 +392,6 @@ func main() {
 	image, side := SolveImage(&tiles)
 
 	fmt.Println("(p1)", part1(image, side)) //7492183537913
-	fmt.Println("(p2)", part2(image, side)) //
+	fmt.Println("(p2)", part2(image, side)) //2323
 
 }
