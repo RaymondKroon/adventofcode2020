@@ -9,13 +9,15 @@ import (
 	"strings"
 )
 
+type String = util.String
+
 type ContainingBag struct {
-	Color string
+	Color String
 	N     int
 }
 
 type BagRule struct {
-	Color string
+	Color String
 	Bags  []ContainingBag
 }
 
@@ -28,7 +30,7 @@ func ParseBagRules(input []string) []BagRule {
 	for _, l := range input {
 		color := colorRegex.FindAllStringSubmatch(l, 1)[0][1]
 		rule := BagRule{
-			Color: color,
+			Color: String(color),
 		}
 
 		bags := make([]ContainingBag, 0)
@@ -39,7 +41,7 @@ func ParseBagRules(input []string) []BagRule {
 			for _, m := range matches {
 				n, _ := strconv.Atoi(m[1])
 				bags = append(bags, ContainingBag{
-					Color: m[2],
+					Color: String(m[2]),
 					N:     n,
 				})
 			}
@@ -54,7 +56,7 @@ func ParseBagRules(input []string) []BagRule {
 
 }
 
-func findBagsWichContains(rules []BagRule, color string) []BagRule {
+func findBagsWichContains(rules []BagRule, color String) []BagRule {
 	result := make([]BagRule, 0)
 	for _, r := range rules {
 		for _, b := range r.Bags {
@@ -67,7 +69,7 @@ func findBagsWichContains(rules []BagRule, color string) []BagRule {
 	return result
 }
 
-func selectBagWithColor(rules []BagRule, color string) BagRule {
+func selectBagWithColor(rules []BagRule, color String) BagRule {
 	for _, br := range rules {
 		if br.Color == color {
 			return br
@@ -78,14 +80,14 @@ func selectBagWithColor(rules []BagRule, color string) BagRule {
 
 func Part1CountShinyGoldParents(rules []BagRule) int {
 	queue := list.New()
-	queue.PushBack("shiny gold")
-	selected := make([]string, 0)
+	queue.PushBack(String("shiny gold"))
+	selected := make([]String, 0)
 
 	for queue.Len() > 0 {
 		e := queue.Front()
 		queue.Remove(e)
 
-		new := findBagsWichContains(rules, e.Value.(string))
+		new := findBagsWichContains(rules, e.Value.(String))
 		for _, n := range new {
 			if !util.StringInSlice(n.Color, selected) {
 				selected = append(selected, n.Color)
@@ -99,7 +101,7 @@ func Part1CountShinyGoldParents(rules []BagRule) int {
 }
 
 type q2 struct {
-	color      string
+	color      String
 	multiplier int
 }
 
