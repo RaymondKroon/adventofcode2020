@@ -16,6 +16,19 @@ func NewStringQueue() StringQueue {
 	}
 }
 
+func NewStringQueueFromSlice(slice []string) StringQueue {
+	queue := NewStringQueue()
+	for _, e := range slice {
+		queue.PushBack(e)
+	}
+
+	return queue
+}
+
+func (q *StringQueue) Len() int {
+	return q.inner.Len()
+}
+
 func (q *StringQueue) Pop() *string {
 	if e := q.inner.Front(); e != nil {
 		q.inner.Remove(e)
@@ -39,6 +52,16 @@ func (q *StringQueue) PushBack(value string) {
 	q.inner.PushBack(value)
 }
 
+func (q *StringQueue) Values() []string {
+	values := make([]string, 0, q.inner.Len())
+	val := q.inner.Front()
+	for val != nil {
+		values = append(values, val.Value.(string))
+		val = val.Next()
+	}
+	return values
+}
+
 type IntQueue struct {
 	inner *list.List
 }
@@ -47,6 +70,19 @@ func NewIntQueue() IntQueue {
 	return IntQueue{
 		inner: list.New(),
 	}
+}
+
+func NewIntQueueFromSlice(slice []int) IntQueue {
+	queue := NewIntQueue()
+	for _, e := range slice {
+		queue.PushBack(e)
+	}
+
+	return queue
+}
+
+func (q *IntQueue) Len() int {
+	return q.inner.Len()
 }
 
 func (q *IntQueue) Pop() *int {
@@ -70,4 +106,14 @@ func (q *IntQueue) Peek() *int {
 
 func (q *IntQueue) PushBack(value int) {
 	q.inner.PushBack(value)
+}
+
+func (q *IntQueue) Values() []int {
+	values := make([]int, 0, q.inner.Len())
+	val := q.inner.Front()
+	for val != nil {
+		values = append(values, val.Value.(int))
+		val = val.Next()
+	}
+	return values
 }
