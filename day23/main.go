@@ -3,74 +3,74 @@ package main
 import (
 	"adventofcode2020/util"
 	"bytes"
-	"container/ring"
 	"fmt"
 )
 
 type Int = util.Int
 
 type CrabCups struct {
-	size      int
-	cups      *ring.Ring
-	positions map[int]*ring.Ring
+	size int
+	cur  int
+	cups []int
 }
 
 func (cc *CrabCups) Values() []int {
 	values := make([]int, cc.size, cc.size)
+	p := cc.cur
 	for i := 0; i < cc.size; i++ {
-		values[i] = cc.cups.Value.(int)
-		cc.cups = cc.cups.Next()
+		values[i] = p
+		p = cc.cups[p]
 	}
 
 	return values
 }
 
 func (cc *CrabCups) Move() (self *CrabCups) {
+	remove1 := cc.cups[cc.cur]
+	remove2 := cc.cups[remove1]
+	remove3 := cc.cups[remove2]
 
-	current := cc.cups.Value.(int)
-	three := cc.cups.Unlink(3)
-
-	picked := map[int]*struct{}{}
-
-	for i := 0; i < 3; i++ {
-		picked[three.Value.(int)] = &struct{}{}
-		three = three.Next()
-	}
-
-	target := current - 1
-	for picked[target] != nil {
+	target := cc.cur - 1
+	for target == remove1 || target == remove2 || target == remove3 {
 		target -= 1
 	}
 	if target == 0 {
 		target = cc.size
-		for picked[target] != nil {
+		for target == remove1 || target == remove2 || target == remove3 {
 			target -= 1
 		}
 	}
 
-	cc.positions[target].Link(three)
-	cc.cups = cc.cups.Next()
+	insert_point := cc.cups[target]
+	cc.cups[cc.cur] = cc.cups[remove3]
+	cc.cups[target] = remove1
+
+	cc.cups[remove3] = insert_point
+
+	cc.cur = cc.cups[cc.cur]
 
 	return cc
 }
 
 func NewCrabCups(initCups []int, totalCups int) CrabCups {
-	cups := ring.New(totalCups)
-	positions := map[int]*ring.Ring{}
+	cups := make([]int, totalCups)
 	for i := 0; i < totalCups; i++ {
 		if i < len(initCups) {
-			cups.Value = initCups[i]
+			cups[i] = initCups[i]
 		} else {
-			cups.Value = i + 1
+			cups[i] = i + 1
 		}
-		positions[cups.Value.(int)] = cups
-		cups = cups.Next()
+	}
+	arr := make([]int, totalCups+1)
+	next := append(cups[1:], cups[0])
+	for i := 0; i < totalCups; i++ {
+		arr[cups[i]] = next[i]
 	}
 
 	return CrabCups{
-		size:      totalCups,
-		cups:      cups,
-		positions: positions,
+		size: totalCups,
+		cups: arr,
+		cur:  initCups[0],
 	}
 }
 
@@ -89,10 +89,10 @@ func part1(cc CrabCups, moves int) string {
 	}
 
 	var buf bytes.Buffer
-	start := cc.positions[1]
+	v := cc.cups[1]
 	for i := 0; i < cc.size-1; i++ {
-		start = start.Next()
-		buf.WriteString(fmt.Sprint(start.Value.(int)))
+		buf.WriteString(fmt.Sprint(v))
+		v = cc.cups[v]
 	}
 
 	return buf.String()
@@ -103,8 +103,9 @@ func part2(cc CrabCups, moves int) int {
 		cc.Move()
 	}
 
-	one := cc.positions[1]
-	return one.Move(1).Value.(int) * one.Move(2).Value.(int)
+	a := cc.cups[1]
+	b := cc.cups[a]
+	return a * b
 }
 
 func main() {
