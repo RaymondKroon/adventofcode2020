@@ -30,14 +30,11 @@ func (cc *CrabCups) Move() (self *CrabCups) {
 	remove2 := cc.cups[remove1]
 	remove3 := cc.cups[remove2]
 
-	target := cc.cur - 1
-	for target == remove1 || target == remove2 || target == remove3 {
+	target := cc.cur
+	for target == cc.cur || target == remove1 || target == remove2 || target == remove3 {
 		target -= 1
-	}
-	if target == 0 {
-		target = cc.size
-		for target == remove1 || target == remove2 || target == remove3 {
-			target -= 1
+		if target == 0 {
+			target = cc.size
 		}
 	}
 
