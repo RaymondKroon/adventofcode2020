@@ -2,50 +2,90 @@ package main
 
 import (
 	"adventofcode2020/util"
+	"bytes"
+	"container/ring"
 	"fmt"
 )
 
-const Size = 9
-
 type Int = util.Int
 
-type CrabCups [Size]Int
-
-func (cc CrabCups) Move() CrabCups {
-	current := cc[0]
-	three := cc[1:4]
-	remainder := cc[4:]
-	target := current - 1
-	var destination int
-	ok := false
-	for !ok && target > 0 {
-		ok, destination = util.IntInSlice(target, remainder)
-		target -= 1
-	}
-	if !ok {
-		_, destination = util.MaxInt(remainder)
-	}
-
-	result := make([]Int, 0, 9)
-	result = append(result, remainder[:destination+1]...)
-	result = append(result, three...)
-	if destination < len(remainder) {
-		result = append(result, remainder[destination+1:]...)
-	}
-	result = append(result, current)
-
-	var newCC CrabCups
-	copy(newCC[:], result)
-	return newCC
+type CrabCups struct {
+	size      int
+	cups      *ring.Ring
+	positions map[int]*ring.Ring
 }
 
-func NewCrabCups(input string) CrabCups {
-	var cups CrabCups
-	for i := 0; i < Size; i++ {
-		cups[i] = Int(util.MustAtoi(string(input[i])))
+func (cc CrabCups) Values() []int {
+	values := make([]int, cc.size, cc.size)
+	for i := 0; i < cc.size; i++ {
+		values[i] = cc.cups.Value.(int)
+		cc.cups = cc.cups.Next()
 	}
 
-	return cups
+	return values
+}
+
+func (cc CrabCups) Move() CrabCups {
+	cups := cc.cups
+
+	current := cups.Value.(int)
+	three := cups.Unlink(3)
+
+	picked := map[int]*struct{}{}
+
+	for i := 0; i < 3; i++ {
+		picked[three.Value.(int)] = &struct{}{}
+		three = three.Next()
+	}
+
+	target := current - 1
+	for picked[target] != nil {
+		target -= 1
+	}
+	if target == 0 {
+		target = cc.size
+		for picked[target] != nil {
+			target -= 1
+		}
+	}
+
+	cc.positions[target].Link(three)
+	cups = cups.Next()
+
+	return CrabCups{
+		size:      cc.size,
+		cups:      cups,
+		positions: cc.positions,
+	}
+}
+
+func NewCrabCups(initCups []int, totalCups int) CrabCups {
+	cups := ring.New(totalCups)
+	positions := map[int]*ring.Ring{}
+	for i := 0; i < totalCups; i++ {
+		if i < len(initCups) {
+			cups.Value = initCups[i]
+		} else {
+			cups.Value = i + 1
+		}
+		positions[cups.Value.(int)] = cups
+		cups = cups.Next()
+	}
+
+	return CrabCups{
+		size:      totalCups,
+		cups:      cups,
+		positions: positions,
+	}
+}
+
+func NewCrabCupsFromString(input string, nCups int) CrabCups {
+	cupValues := make([]int, len(input))
+	for i, c := range input {
+		cupValues[i] = util.MustAtoi(string(c))
+	}
+
+	return NewCrabCups(cupValues, nCups)
 }
 
 func part1(cc CrabCups, moves int) string {
@@ -53,24 +93,29 @@ func part1(cc CrabCups, moves int) string {
 		cc = cc.Move()
 	}
 
-	var one int
-	for i, val := range cc {
-		if val == 1 {
-			one = i
-			break
-		}
+	var buf bytes.Buffer
+	start := cc.positions[1]
+	for i := 0; i < cc.size-1; i++ {
+		start = start.Next()
+		buf.WriteString(fmt.Sprint(start.Value.(int)))
 	}
-	var result []Int
-	result = append(result, cc[one+1:]...)
-	result = append(result, cc[:one]...)
-	return util.IntJoint(result, "")
+
+	return buf.String()
+}
+
+func part2(cc CrabCups, moves int) int {
+	for i := 0; i < moves; i++ {
+		cc = cc.Move()
+	}
+
+	one := cc.positions[1]
+	return one.Move(1).Value.(int) * one.Move(2).Value.(int)
 }
 
 func main() {
 	defer util.Stopwatch("Run")()
 	input, _ := util.ReadInput("./input/day23.txt")
 
-	game := NewCrabCups(input)
-
-	fmt.Println("(p1)", part1(game, 100))
+	fmt.Println("(p1)", part1(NewCrabCupsFromString(input, 9), 100))            //27956483
+	fmt.Println("(p2)", part2(NewCrabCupsFromString(input, 1000000), 10000000)) //18930983775
 }
