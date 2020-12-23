@@ -15,7 +15,7 @@ type CrabCups struct {
 	positions map[int]*ring.Ring
 }
 
-func (cc CrabCups) Values() []int {
+func (cc *CrabCups) Values() []int {
 	values := make([]int, cc.size, cc.size)
 	for i := 0; i < cc.size; i++ {
 		values[i] = cc.cups.Value.(int)
@@ -25,11 +25,10 @@ func (cc CrabCups) Values() []int {
 	return values
 }
 
-func (cc CrabCups) Move() CrabCups {
-	cups := cc.cups
+func (cc *CrabCups) Move() (self *CrabCups) {
 
-	current := cups.Value.(int)
-	three := cups.Unlink(3)
+	current := cc.cups.Value.(int)
+	three := cc.cups.Unlink(3)
 
 	picked := map[int]*struct{}{}
 
@@ -50,13 +49,9 @@ func (cc CrabCups) Move() CrabCups {
 	}
 
 	cc.positions[target].Link(three)
-	cups = cups.Next()
+	cc.cups = cc.cups.Next()
 
-	return CrabCups{
-		size:      cc.size,
-		cups:      cups,
-		positions: cc.positions,
-	}
+	return cc
 }
 
 func NewCrabCups(initCups []int, totalCups int) CrabCups {
@@ -90,7 +85,7 @@ func NewCrabCupsFromString(input string, nCups int) CrabCups {
 
 func part1(cc CrabCups, moves int) string {
 	for i := 0; i < moves; i++ {
-		cc = cc.Move()
+		cc.Move()
 	}
 
 	var buf bytes.Buffer
@@ -105,7 +100,7 @@ func part1(cc CrabCups, moves int) string {
 
 func part2(cc CrabCups, moves int) int {
 	for i := 0; i < moves; i++ {
-		cc = cc.Move()
+		cc.Move()
 	}
 
 	one := cc.positions[1]
