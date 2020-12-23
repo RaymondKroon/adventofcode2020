@@ -4,15 +4,18 @@
 
 package util
 
-import "fmt"
+import (
+	"bytes"
+	"fmt"
+)
 
-func StringInSlice(a String, list []String) bool {
-	for _, b := range list {
+func StringInSlice(a String, list []String) (bool, int) {
+	for i, b := range list {
 		if b.Equals(a) {
-			return true
+			return true, i
 		}
 	}
-	return false
+	return false, -1
 }
 
 func MapStringsToStrings(a []String) []string {
@@ -37,13 +40,38 @@ func CloneStringSlice(slice []String) []String {
 	return cloned
 }
 
-func IntInSlice(a Int, list []Int) bool {
-	for _, b := range list {
-		if b.Equals(a) {
-			return true
+func MaxString(array []String) (max String, index int) {
+	result := array[0]
+	index = 0
+	for i, v := range array[1:] {
+		if v.GreaterThan(result) {
+			result, index = v, i+1
 		}
 	}
-	return false
+	return result, index
+}
+
+func StringJoint(array []String, sep string) string {
+	var buf bytes.Buffer
+	first := false
+	for _, val := range array {
+		if !first {
+			buf.WriteString(sep)
+		}
+		first = false
+		buf.WriteString(val.String())
+	}
+
+	return buf.String()
+}
+
+func IntInSlice(a Int, list []Int) (bool, int) {
+	for i, b := range list {
+		if b.Equals(a) {
+			return true, i
+		}
+	}
+	return false, -1
 }
 
 func MapIntsToStrings(a []Int) []string {
@@ -66,4 +94,29 @@ func CloneIntSlice(slice []Int) []Int {
 	}
 
 	return cloned
+}
+
+func MaxInt(array []Int) (max Int, index int) {
+	result := array[0]
+	index = 0
+	for i, v := range array[1:] {
+		if v.GreaterThan(result) {
+			result, index = v, i+1
+		}
+	}
+	return result, index
+}
+
+func IntJoint(array []Int, sep string) string {
+	var buf bytes.Buffer
+	first := false
+	for _, val := range array {
+		if !first {
+			buf.WriteString(sep)
+		}
+		first = false
+		buf.WriteString(val.String())
+	}
+
+	return buf.String()
 }

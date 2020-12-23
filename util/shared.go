@@ -130,14 +130,16 @@ func Min(array []int) int {
 	return result
 }
 
-func Max(array []int) int {
+func Max(array []int) (max int, index int) {
 	result := array[0]
-	for _, v := range array[1:] {
+	index = 0
+	for i, v := range array[1:] {
 		if result < v {
 			result = v
+			index = i + 1
 		}
 	}
-	return result
+	return result, index
 }
 
 func Contains(s []int, e int) bool {
