@@ -37,7 +37,9 @@ func SolvePart2(numbers []int, target int) int {
 	for sliceSize := 2; sliceSize < len(numbers); sliceSize++ {
 		for i := 0; i < len(numbers)-sliceSize; i++ {
 			if util.Sum(numbers[i:i+sliceSize]) == target {
-				return util.Min(numbers[i:i+sliceSize]) + util.Max(numbers[i:i+sliceSize])
+				min, _ := util.Min(numbers[i : i+sliceSize])
+				max, _ := util.Max(numbers[i : i+sliceSize])
+				return min + max
 			}
 		}
 	}

@@ -130,8 +130,10 @@ func parseInput(input string) (rules map[Int]Rule, messages []string) {
 func Part1(rules map[Int]Rule, messages []string) int {
 	valid := 0
 	for _, message := range messages {
-		if match, lengths := rules[0].IsMatch(message); match && util.IntInSlice(Int(len(message)), lengths) {
-			valid++
+		if match, lengths := rules[0].IsMatch(message); match {
+			if inSlice, _ := util.IntInSlice(Int(len(message)), lengths); inSlice {
+				valid++
+			}
 		}
 	}
 	return valid
@@ -150,8 +152,10 @@ func Part2(rules map[Int]Rule, messages []string) int {
 	valid := 0
 	for _, message := range messages {
 		match, lengths := rules[0].IsMatch(message)
-		if match && util.IntInSlice(Int(len(message)), lengths) {
-			valid++
+		if match {
+			if inSlice, _ := util.IntInSlice(Int(len(message)), lengths); inSlice {
+				valid++
+			}
 		}
 	}
 	return valid

@@ -120,14 +120,16 @@ func Sum(array []int) int {
 	return result
 }
 
-func Min(array []int) int {
+func Min(array []int) (min int, index int) {
 	result := array[0]
-	for _, v := range array[1:] {
+	index = 0
+	for i, v := range array[1:] {
 		if result > v {
 			result = v
+			index = i + 1
 		}
 	}
-	return result
+	return result, index
 }
 
 func Max(array []int) (max int, index int) {
