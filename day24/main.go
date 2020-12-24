@@ -10,7 +10,7 @@ import (
 ////go:generate stringer -type=Move // duplicate if using enumer
 //go:generate enumer -type=Move -text
 
-type Move int
+type Move int8
 
 const (
 	e Move = iota + 1
@@ -22,11 +22,11 @@ const (
 )
 
 type Coord struct {
-	x int
-	y int
+	x int8
+	y int8
 }
 
-func (c *Coord) MoveXY(dx, dy int) Coord {
+func (c *Coord) MoveXY(dx, dy int8) Coord {
 	return Coord{
 		x: c.x + dx,
 		y: c.y + dy,
@@ -97,10 +97,10 @@ func FlipTiles(instructions [][]Move) (blacks map[Coord]struct{}) {
 }
 
 func DailyFlip(blacks map[Coord]struct{}) map[Coord]struct{} {
-	result := make(map[Coord]struct{})
-	whitesWithBlackNeighbours := make(map[Coord]int)
+	result := make(map[Coord]struct{}, len(blacks)*2)
+	whitesWithBlackNeighbours := make(map[Coord]int8, len(blacks)*2)
 	for tile, _ := range blacks {
-		count := 0
+		count := int8(0)
 		for _, nb := range tile.Neigbours() {
 			if _, exist := blacks[nb]; exist {
 				count += 1
