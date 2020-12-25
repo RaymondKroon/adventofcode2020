@@ -83,7 +83,7 @@ func ReadSplittedInput(filePath string, splitOn ...string) ([]string, error) {
 	}
 
 	scanner := bufio.NewScanner(file)
-	scanner.Split(CreateSubstringSplitter(splitOn))
+	scanner.Split(CreateSubstringSplitter(splitOn)) // scanlines doet dit beter, die dropt \r. Maar als je dan wilt splitten op \n\n moet je het anders doen. Gewoon onhandig aanpak zo dan
 	var text []string
 
 	for scanner.Scan() {
