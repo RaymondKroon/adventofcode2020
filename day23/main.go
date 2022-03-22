@@ -6,8 +6,6 @@ import (
 	"fmt"
 )
 
-type Int = util.Int
-
 type CrabCups struct {
 	size int
 	cur  int

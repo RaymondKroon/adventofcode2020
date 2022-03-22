@@ -39,26 +39,26 @@ func (a ByAllergen) Less(i, j int) bool { return a[i].Allergen < a[j].Allergen }
 func (a ByAllergen) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
 
 func filterIngredients(foods []Food) (allergenFree []string, withAllergens []Ingredient) {
-	ingredients := util.NewStringSet()
+	ingredients := util.NewSet[string]()
 	for _, food := range foods {
 		for _, ingredient := range food.Ingredients {
 			ingredients.Add(ingredient)
 		}
 	}
 
-	allergens := map[string]util.StringSet{}
+	allergens := map[string]util.Set[string]{}
 
 	for _, food := range foods {
 		for _, allergen := range food.Allergens {
 			if i, ok := allergens[allergen]; ok {
-				allergens[allergen] = i.Intersect(util.NewStringSetFromSlice(food.Ingredients))
+				allergens[allergen] = i.Intersect(util.NewSetFromSlice(food.Ingredients))
 			} else {
-				allergens[allergen] = ingredients.Intersect(util.NewStringSetFromSlice(food.Ingredients))
+				allergens[allergen] = ingredients.Intersect(util.NewSetFromSlice(food.Ingredients))
 			}
 		}
 	}
 
-	singleFields := util.NewStringQueue()
+	singleFields := util.NewQueue[string]()
 	for _, allergenIngredients := range allergens {
 		if allergenIngredients.Len() == 1 {
 			singleFields.PushBack(allergenIngredients.First())
@@ -98,7 +98,7 @@ func part1(foods []Food) int {
 
 	total := 0
 	for _, food := range foods {
-		foodSet := util.NewStringSetFromSlice(food.Ingredients)
+		foodSet := util.NewSetFromSlice(food.Ingredients)
 		for _, ingredient := range ingredients {
 			if foodSet.Contains(ingredient) {
 				total += 1

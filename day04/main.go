@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"regexp"
 	"strconv"
+	"strings"
 )
 
 type Passport = map[string]string
@@ -85,7 +86,7 @@ func PassportFieldsPresentAndCorrect(p Passport) bool {
 		return false
 	}
 
-	if !util.StringInSlice(p["ecl"], []string{"amb", "blu", "brn", "gry", "grn", "hzl", "oth"}) {
+	if inSlice, _ := util.InSlice(p["ecl"], []string{"amb", "blu", "brn", "gry", "grn", "hzl", "oth"}); !inSlice {
 		return false
 	}
 
@@ -99,7 +100,8 @@ func PassportFieldsPresentAndCorrect(p Passport) bool {
 
 func main() {
 	defer util.Stopwatch("Run")()
-	passwordChunks, _ := util.ReadSplittedInput("./input/day04.txt", "\n\n")
+	text, _ := util.ReadInput("./input/day04.txt")
+	passwordChunks := strings.Split(text, "\n\n")
 	passports := ParsePassports(passwordChunks)
 	validPasswords := 0
 	for _, p := range *passports {

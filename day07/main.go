@@ -9,15 +9,13 @@ import (
 	"strings"
 )
 
-type String = util.String
-
 type ContainingBag struct {
-	Color String
+	Color string
 	N     int
 }
 
 type BagRule struct {
-	Color String
+	Color string
 	Bags  []ContainingBag
 }
 
@@ -30,7 +28,7 @@ func ParseBagRules(input []string) []BagRule {
 	for _, l := range input {
 		color := colorRegex.FindAllStringSubmatch(l, 1)[0][1]
 		rule := BagRule{
-			Color: String(color),
+			Color: color,
 		}
 
 		bags := make([]ContainingBag, 0)
@@ -41,7 +39,7 @@ func ParseBagRules(input []string) []BagRule {
 			for _, m := range matches {
 				n, _ := strconv.Atoi(m[1])
 				bags = append(bags, ContainingBag{
-					Color: String(m[2]),
+					Color: m[2],
 					N:     n,
 				})
 			}
@@ -56,7 +54,7 @@ func ParseBagRules(input []string) []BagRule {
 
 }
 
-func findBagsWichContains(rules []BagRule, color String) []BagRule {
+func findBagsWichContains(rules []BagRule, color string) []BagRule {
 	result := make([]BagRule, 0)
 	for _, r := range rules {
 		for _, b := range r.Bags {
@@ -69,7 +67,7 @@ func findBagsWichContains(rules []BagRule, color String) []BagRule {
 	return result
 }
 
-func selectBagWithColor(rules []BagRule, color String) BagRule {
+func selectBagWithColor(rules []BagRule, color string) BagRule {
 	for _, br := range rules {
 		if br.Color == color {
 			return br
@@ -80,16 +78,16 @@ func selectBagWithColor(rules []BagRule, color String) BagRule {
 
 func Part1CountShinyGoldParents(rules []BagRule) int {
 	queue := list.New()
-	queue.PushBack(String("shiny gold"))
-	selected := make([]String, 0)
+	queue.PushBack("shiny gold")
+	selected := make([]string, 0)
 
 	for queue.Len() > 0 {
 		e := queue.Front()
 		queue.Remove(e)
 
-		new := findBagsWichContains(rules, e.Value.(String))
-		for _, n := range new {
-			if !util.StringInSlice(n.Color, selected) {
+		nw := findBagsWichContains(rules, e.Value.(string))
+		for _, n := range nw {
+			if inSlice, _ := util.InSlice(n.Color, selected); !inSlice {
 				selected = append(selected, n.Color)
 				queue.PushBack(n.Color)
 			}
@@ -101,7 +99,7 @@ func Part1CountShinyGoldParents(rules []BagRule) int {
 }
 
 type q2 struct {
-	color      String
+	color      string
 	multiplier int
 }
 

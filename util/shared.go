@@ -73,26 +73,6 @@ func CreateSubstringSplitter(substrings []string) bufio.SplitFunc {
 	return splitter
 }
 
-// Deprecated: Does not work wel with \r?\n
-func ReadSplittedInput(filePath string, splitOn ...string) ([]string, error) {
-	file, err := os.Open(filePath)
-	defer file.Close()
-
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	scanner := bufio.NewScanner(file)
-	scanner.Split(CreateSubstringSplitter(splitOn)) // scanlines doet dit beter, die dropt \r. Maar als je dan wilt splitten op \n\n moet je het anders doen. Gewoon onhandig aanpak zo dan
-	var text []string
-
-	for scanner.Scan() {
-		text = append(text, scanner.Text())
-	}
-
-	return text, nil
-}
-
 func ReadInputLines(filePath string) ([]string, error) {
 	file, err := os.Open(filePath)
 	defer file.Close()
@@ -118,30 +98,6 @@ func Sum(array []int) int {
 		result += v
 	}
 	return result
-}
-
-func Min(array []int) (min int, index int) {
-	result := array[0]
-	index = 0
-	for i, v := range array[1:] {
-		if result > v {
-			result = v
-			index = i + 1
-		}
-	}
-	return result, index
-}
-
-func Max(array []int) (max int, index int) {
-	result := array[0]
-	index = 0
-	for i, v := range array[1:] {
-		if result < v {
-			result = v
-			index = i + 1
-		}
-	}
-	return result, index
 }
 
 func Contains(s []int, e int) bool {

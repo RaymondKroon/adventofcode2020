@@ -117,10 +117,10 @@ func Part2IdentifyValues(myTicket []int, otherTickets [][]int, rules []Rule) int
 	checkAll := checkAllRule(rules)
 
 	nFields := len(myTicket)
-	fieldOrder := make([]util.StringSet, nFields)
+	fieldOrder := make([]util.Set[string], nFields)
 
 	for i := 0; i < nFields; i++ {
-		fieldOrder[i] = util.NewStringSet()
+		fieldOrder[i] = util.NewSet[string]()
 		for _, rule := range rules {
 			fieldOrder[i].Add(rule.Name)
 		}

@@ -3,12 +3,14 @@ package util
 import (
 	"bytes"
 	"fmt"
+	"golang.org/x/exp/constraints"
 )
 
-//go:generate genny -in=$GOFILE -out=gen-$GOFILE gen "SliceType=String,Int"
-//type ValueType = generic.Type
+type Comparable[T any] interface {
+	Equals(other T) bool
+}
 
-func SliceTypeInSlice(a SliceType, list []SliceType) (bool, int) {
+func InSliceI[T Comparable[T]](a T, list []T) (bool, int) {
 	for i, b := range list {
 		if b.Equals(a) {
 			return true, i
@@ -17,7 +19,16 @@ func SliceTypeInSlice(a SliceType, list []SliceType) (bool, int) {
 	return false, -1
 }
 
-func MapSliceTypesToStrings(a []SliceType) []string {
+func InSlice[T comparable](a T, list []T) (bool, int) {
+	for i, b := range list {
+		if b == a {
+			return true, i
+		}
+	}
+	return false, -1
+}
+
+func MapToStrings[T any](a []T) []string {
 	result := make([]string, len(a))
 	for i := 0; i < len(a); i++ {
 		result[i] = fmt.Sprint(a[i])
@@ -26,12 +37,12 @@ func MapSliceTypesToStrings(a []SliceType) []string {
 	return result
 }
 
-func RemoveFromSliceTypeSlice(slice []SliceType, idx int) []SliceType {
+func RemoveFromSlice[T any](slice []T, idx int) []T {
 	return append(slice[:idx:idx], slice[idx+1:]...)
 }
 
-func CloneSliceTypeSlice(slice []SliceType) []SliceType {
-	cloned := make([]SliceType, len(slice))
+func CloneSlice[T any](slice []T) []T {
+	cloned := make([]T, len(slice))
 	for i := 0; i < len(slice); i++ {
 		cloned[i] = slice[i]
 	}
@@ -39,18 +50,29 @@ func CloneSliceTypeSlice(slice []SliceType) []SliceType {
 	return cloned
 }
 
-func MaxSliceType(array []SliceType) (max SliceType, index int) {
+func Max[T constraints.Ordered](array []T) (max T, index int) {
 	result := array[0]
 	index = 0
 	for i, v := range array[1:] {
-		if v.GreaterThan(result) {
+		if v > result {
 			result, index = v, i+1
 		}
 	}
 	return result, index
 }
 
-func SliceTypeJoint(array []SliceType, sep string) string {
+func Min[T constraints.Ordered](array []T) (max T, index int) {
+	result := array[0]
+	index = 0
+	for i, v := range array[1:] {
+		if v < result {
+			result, index = v, i+1
+		}
+	}
+	return result, index
+}
+
+func Joint[T any](array []T, sep string) string {
 	var buf bytes.Buffer
 	first := false
 	for _, val := range array {
@@ -58,7 +80,7 @@ func SliceTypeJoint(array []SliceType, sep string) string {
 			buf.WriteString(sep)
 		}
 		first = false
-		buf.WriteString(val.String())
+		buf.WriteString(fmt.Sprint(val))
 	}
 
 	return buf.String()

@@ -35,7 +35,8 @@ func CountAnswers(input string) Counters {
 
 func main() {
 	defer util.Stopwatch("Run")()
-	groupChunks, _ := util.ReadSplittedInput("./input/day06.txt", "\n\n")
+	text, _ := util.ReadInput("./input/day06.txt")
+	groupChunks := strings.Split(text, "\n\n")
 	any := 0
 	all := 0
 	for _, g := range groupChunks {

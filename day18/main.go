@@ -35,8 +35,8 @@ func popStack(stack Stack) (val *StackValue, poppedStack Stack) {
 func parse(expressionStr string, precedes func(op1, op2 string) bool) (expression []string) {
 	tokenMatcher := regexp.MustCompile(`([0-9\(\)\+\*])`)
 	matches := tokenMatcher.FindAllStringSubmatch(expressionStr, -1)
-	outputStack := util.NewStringStack()
-	operatorStack := util.NewStringStack()
+	outputStack := util.NewStack[string]()
+	operatorStack := util.NewStack[string]()
 
 	for _, match := range matches {
 		token := match[0]
@@ -69,7 +69,7 @@ func parse(expressionStr string, precedes func(op1, op2 string) bool) (expressio
 }
 
 func evaluate(expression []string) int {
-	stack := util.NewIntStack()
+	stack := util.NewStack[int]()
 
 	for _, e := range expression {
 		switch e {

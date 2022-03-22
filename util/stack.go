@@ -1,17 +1,16 @@
 package util
 
-//go:generate genny -in=$GOFILE -out=gen-$GOFILE gen "ValueType=string,int"
-type ValueTypeStack struct {
-	inner []ValueType
+type Stack[T any] struct {
+	inner []T
 }
 
-func NewValueTypeStack() ValueTypeStack {
-	return ValueTypeStack{
-		inner: make([]ValueType, 0, 10),
+func NewStack[T any]() Stack[T] {
+	return Stack[T]{
+		inner: make([]T, 0, 10),
 	}
 }
 
-func (stack *ValueTypeStack) Pop() *ValueType {
+func (stack *Stack[T]) Pop() *T {
 	if len(stack.inner) == 0 {
 		return nil
 	} else {
@@ -22,7 +21,7 @@ func (stack *ValueTypeStack) Pop() *ValueType {
 	}
 }
 
-func (stack *ValueTypeStack) Peek() *ValueType {
+func (stack *Stack[T]) Peek() *T {
 	if len(stack.inner) == 0 {
 		return nil
 	} else {
@@ -30,10 +29,10 @@ func (stack *ValueTypeStack) Peek() *ValueType {
 	}
 }
 
-func (stack *ValueTypeStack) Push(value ValueType) {
+func (stack *Stack[T]) Push(value T) {
 	stack.inner = append(stack.inner, value)
 }
 
-func (stack *ValueTypeStack) ToArray() []ValueType {
+func (stack *Stack[T]) ToArray() []T {
 	return stack.inner
 }

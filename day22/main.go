@@ -6,7 +6,6 @@ import (
 	"strings"
 )
 
-type Int = util.Int
 type IntArray []int
 
 func (a IntArray) Equals(o IntArray) bool {
@@ -22,8 +21,6 @@ func (a IntArray) Equals(o IntArray) bool {
 	return true
 }
 
-//go:generate genny -in=../util/slice.go -out=gen-$GOFILE -pkg=main gen "SliceType=IntArray"
-
 func loadHands(input string) (player1 []int, player2 []int) {
 	parts := strings.Split(input, "\n\n")
 	for i, player := range []*[]int{&player1, &player2} {
@@ -37,8 +34,8 @@ func loadHands(input string) (player1 []int, player2 []int) {
 }
 
 func playCombat(p1 []int, p2 []int) (winner int, score int) {
-	hand1 := util.NewIntQueueFromSlice(p1)
-	hand2 := util.NewIntQueueFromSlice(p2)
+	hand1 := util.NewQueueFromSlice(p1)
+	hand2 := util.NewQueueFromSlice(p2)
 
 	for hand1.Len() > 0 && hand2.Len() > 0 {
 		c1 := hand1.Pop()
@@ -53,7 +50,7 @@ func playCombat(p1 []int, p2 []int) (winner int, score int) {
 		}
 	}
 
-	var winningHand util.IntQueue
+	var winningHand util.Queue[int]
 	if hand1.Len() > 0 {
 		winner = 1
 		winningHand = hand1
@@ -72,15 +69,20 @@ func playCombat(p1 []int, p2 []int) (winner int, score int) {
 }
 
 func playRecursiveCombat(p1, p2 []int) (winner int, score int) {
-	hand1 := util.NewIntQueueFromSlice(p1)
-	hand2 := util.NewIntQueueFromSlice(p2)
+	hand1 := util.NewQueueFromSlice(p1)
+	hand2 := util.NewQueueFromSlice(p2)
 
-	var history1 = []IntArray{}
-	var history2 = []IntArray{}
+	var history1 []IntArray
+	var history2 []IntArray
 	recursiveBreak := false
 	for hand1.Len() > 0 && hand2.Len() > 0 {
 
-		if IntArrayInSlice(hand1.Values(), history1) || IntArrayInSlice(hand2.Values(), history2) {
+		if inSlice, _ := util.InSliceI[IntArray](hand1.Values(), history1); inSlice {
+			recursiveBreak = true
+			break
+		}
+
+		if inSlice, _ := util.InSliceI[IntArray](hand2.Values(), history2); inSlice {
 			recursiveBreak = true
 			break
 		}
@@ -105,7 +107,7 @@ func playRecursiveCombat(p1, p2 []int) (winner int, score int) {
 		}
 	}
 
-	var winningHand util.IntQueue
+	var winningHand util.Queue[int]
 	if recursiveBreak || hand1.Len() > 0 {
 		winner = 1
 		winningHand = hand1
